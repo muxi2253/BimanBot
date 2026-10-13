@@ -4,25 +4,35 @@ This repository contains a runnable public MuJoCo model, a configuration-driven 
 
 ## Demos
 
+> **Note**: Demo GIFs and dataset files are large (~300 MB) and not included in the code repository.
+> 
+> 📦 **How to obtain**:
+> - [Download from GitHub Releases](../../releases) (recommended)
+> - [See complete download guide](docs/DATASET_DOWNLOAD.md)
+> - Or run commands in `SHOWCASE_RELEASE.md` to generate yourself
+
 ### Full Workspace View
 The robot picks two objects from the left crate, moves the base, and places them into the right crate.
 
-![Demo Wide View](recordings/showcase_public/demo_wide.gif)
+<!-- Download and place at: recordings/showcase_public/demo_wide.gif -->
+![Demo Wide View](https://via.placeholder.com/800x450.png?text=Demo+Wide+View+-+See+Releases)
 
 ### TCP-Following Closeup
 Camera follows the left arm's end-effector, showing approach, grasp, lift, transfer, place, and release.
 
-![Demo Closeup View](recordings/showcase_public/demo_closeup.gif)
+<!-- Download and place at: recordings/showcase_public/demo_closeup.gif -->
+![Demo Closeup View](https://via.placeholder.com/800x450.png?text=Demo+Closeup+-+See+Releases)
 
 ### Dual-Arm Reaching Environment
 Periodic dual-arm reaching motions in the Gym environment.
 
-![Reach Episode](recordings/showcase_public/reach_episode.gif)
+<!-- Download and place at: recordings/showcase_public/reach_episode.gif -->
+![Reach Episode](https://via.placeholder.com/800x450.png?text=Reach+Episode+-+See+Releases)
 
 ### Spatial Fusion Experiment
 Comparison of four non-learning depth-prior baselines.
 
-[Watch Spatial Fusion Video](recordings/showcase_public/spatial_fusion.mp4)
+<!-- Download and place at: recordings/showcase_public/spatial_fusion.mp4 -->
 
 ## Implemented capabilities
 
@@ -119,7 +129,9 @@ The trajectory width must match the scene's `model.nq`. A teleoperation collecto
 
 ## Public Dataset
 
-The repository includes a complete example dataset with:
+> **Note**: Dataset files are large and not included in the code repository. Obtain them via:
+> - **GitHub Releases**: [Download dataset archive](../../releases) (recommended)
+> - **Generate yourself**: Run commands in `SHOWCASE_RELEASE.md` to generate data
 
 ### LeRobot v2.1 Format Dataset
 **Path**: `recordings/showcase_public/lerobot/`  

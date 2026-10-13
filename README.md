@@ -4,25 +4,35 @@
 
 ## 效果展示
 
+> **注意**: 演示 GIF 和数据集文件较大（约 300 MB），未包含在代码仓库中。
+> 
+> 📦 **获取方式**:
+> - [从 GitHub Releases 下载](../../releases)（推荐）
+> - [查看完整下载指南](docs/DATASET_DOWNLOAD.md)
+> - 或运行 `SHOWCASE_RELEASE.md` 中的命令自行生成
+
 ### 完整工作区视角
 机器人从左侧料箱取出两个物体，移动底盘后放入右侧料箱。
 
-![Demo Wide View](recordings/showcase_public/demo_wide.gif)
+<!-- 下载后放置在: recordings/showcase_public/demo_wide.gif -->
+![Demo Wide View](https://via.placeholder.com/800x450.png?text=Demo+Wide+View+-+See+Releases)
 
 ### TCP 跟随特写
 相机跟随左臂末端，展示接近、闭合、抬升、转运、下降和释放的完整流程。
 
-![Demo Closeup View](recordings/showcase_public/demo_closeup.gif)
+<!-- 下载后放置在: recordings/showcase_public/demo_closeup.gif -->
+![Demo Closeup View](https://via.placeholder.com/800x450.png?text=Demo+Closeup+-+See+Releases)
 
 ### 双臂 Reach 环境
 Gym 环境中的周期性双臂到达动作。
 
-![Reach Episode](recordings/showcase_public/reach_episode.gif)
+<!-- 下载后放置在: recordings/showcase_public/reach_episode.gif -->
+![Reach Episode](https://via.placeholder.com/800x450.png?text=Reach+Episode+-+See+Releases)
 
 ### 空间融合实验
 四种非学习深度先验基线的对比。
 
-[观看空间融合视频](recordings/showcase_public/spatial_fusion.mp4)
+<!-- 下载后放置在: recordings/showcase_public/spatial_fusion.mp4 -->
 
 ## 当前可用功能
 
@@ -140,7 +150,9 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 
 ## 公开数据集
 
-仓库提供了一个完整的示例数据集，包含：
+> **注意**: 数据集文件较大，未包含在代码仓库中。请从以下方式获取：
+> - **GitHub Releases**: [下载数据集压缩包](../../releases)（推荐）
+> - **自行生成**: 运行 `SHOWCASE_RELEASE.md` 中的命令生成数据
 
 ### LeRobot v2.1 格式数据集
 **路径**: `recordings/showcase_public/lerobot/`  
