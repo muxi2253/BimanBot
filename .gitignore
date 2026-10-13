@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Data and outputs
+exports/
+recordings/
+data/
+datasets/
+*.parquet
+*.hdf5
+*.mp4
+*.gif
+*.avi
+*.png
+*.jpg
+*.npy
+*.npz
+
+# Checkpoints and logs
+checkpoints/
+logs/
+runs/
+wandb/
+tensorboard/
+*.pt
+*.pth
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.directory
+
+# Backups
+*_backup/
+*.bak
+*.backup
+
+# MuJoCo
+*.mjb
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+
+# Generated files (except the main robot XML)
+# robot/dual_arm_robot.xml is kept in version control
+# but other generated files are ignored
+
+# Test outputs
+test_output/
+*.test

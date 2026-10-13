@@ -1,0 +1,135 @@
+{
+  "bluecup.obj": {
+    "file": "bluecup.obj",
+    "scale": 0.1,
+    "size_xyz": [
+      0.08864656090736389,
+      0.09342540800571442,
+      0.10474350303411484
+    ],
+    "center_offset": [
+      0.0001797173172235489,
+      -0.000522855669260025,
+      -0.005563303828239441
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.045499999076128006,
+    "cylinder_half_height": 0.052400000393390656,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "chouzhi.obj": {
+    "file": "chouzhi.obj",
+    "scale": 1.0,
+    "size_xyz": [
+      0.468366414308548,
+      0.6857843995094299,
+      0.9894127249717712
+    ],
+    "center_offset": [
+      -0.0014475136995315552,
+      0.014862060546875,
+      0.016962677240371704
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.28850001096725464,
+    "cylinder_half_height": 0.49470001459121704,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "crate.obj": {
+    "file": "crate.obj",
+    "scale": 1.0,
+    "size_xyz": [
+      0.25408899784088135,
+      0.40550199151039124,
+      0.5055019855499268
+    ],
+    "center_offset": [
+      0.022614747285842896,
+      0.0,
+      0.0
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.164900004863739,
+    "cylinder_half_height": 0.25279998779296875,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "hufasu.obj": {
+    "file": "hufasu.obj",
+    "scale": 1.0,
+    "size_xyz": [
+      0.30260002613067627,
+      0.32818716764450073,
+      1.1693792343139648
+    ],
+    "center_offset": [
+      -0.00011374056339263916,
+      -0.0014784559607505798,
+      -0.06261792778968811
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.15770000219345093,
+    "cylinder_half_height": 0.5846999883651733,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "kebike.obj": {
+    "file": "kebike.obj",
+    "scale": 0.2,
+    "size_xyz": [
+      0.07292070239782333,
+      0.0762222558259964,
+      0.22867196798324585
+    ],
+    "center_offset": [
+      -0.00022299215197563171,
+      0.0005340483039617538,
+      0.0013190656900405884
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.037300001829862595,
+    "cylinder_half_height": 0.11429999768733978,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "qie.obj": {
+    "file": "qie.obj",
+    "scale": 0.2,
+    "size_xyz": [
+      0.13037167489528656,
+      0.14336436986923218,
+      0.20677678287029266
+    ],
+    "center_offset": [
+      -0.0006116554141044617,
+      0.0027391724288463593,
+      -0.030762948095798492
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.06840000301599503,
+    "cylinder_half_height": 0.10339999943971634,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  },
+  "shanyaocuipian.obj": {
+    "file": "shanyaocuipian.obj",
+    "scale": 1.0,
+    "size_xyz": [
+      0.21370801329612732,
+      0.5184763669967651,
+      1.1064531803131104
+    ],
+    "center_offset": [
+      -0.004700459539890289,
+      -0.00833253562450409,
+      0.006826668977737427
+    ],
+    "long_axis": "Z",
+    "cylinder_radius": 0.18299999833106995,
+    "cylinder_half_height": 0.5532000064849854,
+    "cylinder_euler": "0 0 0",
+    "origin_centered": false
+  }
+}

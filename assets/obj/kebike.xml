@@ -1,0 +1,18 @@
+<mujoco>
+  <compiler meshdir="."/>
+  <asset>
+    <mesh name="crate_mesh" file="crate.obj" />
+    <mesh name="kebike_mesh" file="kebike.obj" scale="0.2 0.2 0.2"/>
+    <material name="mat_kebike" rgba="1.0 0.6 0.0 1" specular="0.3" shininess="0.3" />
+  </asset>
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1"/>
+    <light pos="2 2 2" dir="-1 -1 -1"/>
+    <geom type="plane" size="1 1 0.1" rgba=".8 .8 .8 1"/>
+    <body name="kebike_0" pos="0 0 1.0">
+      <freejoint />
+      <geom name="kebike_0_visual" type="mesh" mesh="kebike_mesh" material="mat_kebike" contype="0" conaffinity="0"/>
+      <geom name="kebike_0_proxy" type="sphere" size="0.05" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" pos="0 0.05 0"/>
+    </body>
+  </worldbody>
+</mujoco>

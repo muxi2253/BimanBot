@@ -1,0 +1,19 @@
+<mujoco>
+  <asset>
+    <mesh name="qie_mesh" file="../../assets/obj/qie.obj" scale="0.1 0.1 0.1" />
+    <texture name="tex_qie" type="2d" file="../../assets/obj/textures/qie_pbr_20250901.png" />
+    <material name="mat_qie" texture="tex_qie" specular="0.5" shininess="0.25" reflectance="0.0" rgba="1 1 1 1" />
+  </asset>
+
+  <worldbody>
+    <body name="qie_0" pos="1.26 0.45 0.95">
+      <freejoint />
+      <geom name="qie_0_visual" type="mesh" mesh="qie_mesh" material="mat_qie"
+        contype="0" conaffinity="0" density="0" quat="0 0 1 1" />
+      <geom name="qie_0_proxy" type="box"
+        size="0.03499 0.03142 0.05129"
+        pos="-0.00211 -0.00595 0.05130"
+        density="400" friction="1.2 0.01 0.001" rgba="0 0 1 0" />
+    </body>
+  </worldbody>
+</mujoco>

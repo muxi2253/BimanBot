@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="dual_arm_robot">
+  <compiler angle="radian" eulerseq="xyz" />
+  <option timestep="0.002" iterations="50" solver="Newton" integrator="implicitfast" gravity="0 0 -9.81" />
+  <visual>
+    <headlight ambient="0.32 0.34 0.38" diffuse="0.75 0.78 0.82" specular="0.25 0.25 0.25" />
+    <rgba haze="0.18 0.22 0.30 1" />
+  </visual>
+  <asset>
+    <texture name="sky" type="skybox" builtin="gradient" width="512" height="3072"
+      rgb1="0.12 0.16 0.24" rgb2="0.72 0.78 0.86" />
+    <texture name="floor_grid" type="2d" builtin="checker" width="512" height="512"
+      rgb1="0.12 0.14 0.17" rgb2="0.18 0.21 0.25" mark="edge" markrgb="0.25 0.29 0.34" />
+    <material name="floor_mat" texture="floor_grid" texrepeat="12 12" texuniform="true" reflectance="0.08" />
+    <material name="base_grey" rgba="0.10 0.13 0.17 1" specular="0.45" shininess="0.35" />
+    <material name="wheel_black" rgba="0.025 0.03 0.04 1" specular="0.15" shininess="0.15" />
+    <material name="torso_grey" rgba="0.72 0.76 0.80 1" specular="0.5" shininess="0.45" />
+    <material name="arm_blue" rgba="0.08 0.32 0.62 1" specular="0.55" shininess="0.5" />
+    <material name="joint_dark" rgba="0.035 0.055 0.08 1" specular="0.5" shininess="0.55" />
+    <material name="accent_cyan" rgba="0.05 0.72 0.86 1" emission="0.08" specular="0.65" shininess="0.7" />
+    <material name="gripper_grey" rgba="0.18 0.22 0.27 1" specular="0.5" shininess="0.55" />
+  </asset>
+  <worldbody>
+    <geom name="floor" type="plane" size="10 10 0.1" material="floor_mat" condim="3" friction="1.0 0.005 0.0001" />
+    <light name="light1" pos="2 2 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.2 0.2 0.2" />
+    <light name="light2" pos="-2 2 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.2 0.2 0.2" />
+    <light name="light3" pos="0 -2 3" dir="0 0 -1" diffuse="0.8 0.8 0.8" specular="0.2 0.2 0.2" />
+    <!-- Wheel bottoms and chassis bottom are at z=0 in the neutral pose. -->
+    <body name="base_link" pos="0 0 0">
+      <inertial pos="0 0 0.15" mass="50.0" diaginertia="2.0 2.5 2.0" />
+      <geom type="box" pos="0 0 0.15" size="0.3 0.25 0.15" material="base_grey" />
+      <geom name="base_front_bumper" type="capsule" fromto="0.292 -0.20 0.10 0.292 0.20 0.10"
+        size="0.045" material="joint_dark" contype="0" conaffinity="0" mass="0" />
+      <geom name="base_front_light" type="box" pos="0.301 0 0.19" size="0.006 0.105 0.025"
+        material="accent_cyan" contype="0" conaffinity="0" mass="0" />
+      <geom name="base_top_trim" type="box" pos="0 0 0.302" size="0.24 0.19 0.012"
+        material="torso_grey" contype="0" conaffinity="0" mass="0" />
+      <geom name="rear_caster" type="sphere" pos="-0.22 0 0.055" size="0.055"
+        material="wheel_black" contype="0" conaffinity="0" mass="0" />
+      <freejoint name="base_freejoint" />
+      <body name="left_wheel" pos="0 0.25 0.1" euler="-1.5708 0 0">
+        <inertial pos="0 0 0" mass="2.0" diaginertia="0.01 0.01 0.02" />
+        <geom type="cylinder" size="0.1 0.025" material="wheel_black" />
+        <geom type="cylinder" size="0.045 0.027" material="accent_cyan"
+          contype="0" conaffinity="0" mass="0" />
+        <joint name="left_wheel_joint" axis="0 0 1" type="hinge" limited="false" />
+      </body>
+      <body name="right_wheel" pos="0 -0.25 0.1" euler="-1.5708 0 0">
+        <inertial pos="0 0 0" mass="2.0" diaginertia="0.01 0.01 0.02" />
+        <geom type="cylinder" size="0.1 0.025" material="wheel_black" />
+        <geom type="cylinder" size="0.045 0.027" material="accent_cyan"
+          contype="0" conaffinity="0" mass="0" />
+        <joint name="right_wheel_joint" axis="0 0 1" type="hinge" limited="false" />
+      </body>
+      <body name="torso_link" pos="0 0 0.3">
+        <inertial pos="0 0 0.2" mass="15.0" diaginertia="0.5 0.5 0.2" />
+        <geom type="box" pos="0 0 0.2" size="0.15 0.15 0.2" material="torso_grey" />
+        <geom name="chest_panel" type="box" pos="0.154 0 0.23" size="0.008 0.105 0.115"
+          material="joint_dark" contype="0" conaffinity="0" mass="0" />
+        <geom name="chest_status" type="capsule" fromto="0.164 -0.065 0.29 0.164 0.065 0.29"
+          size="0.008" material="accent_cyan" contype="0" conaffinity="0" mass="0" />
+        <geom name="shoulder_bar" type="capsule" fromto="0.035 -0.20 0.36 0.035 0.20 0.36"
+          size="0.055" material="joint_dark" contype="0" conaffinity="0" mass="0" />
+        <body name="sensor_head" pos="0.02 0 0.49">
+          <geom type="ellipsoid" size="0.105 0.085 0.07" material="torso_grey"
+            contype="0" conaffinity="0" mass="0" />
+          <geom type="box" pos="0.094 0 0.005" size="0.018 0.060 0.032" material="joint_dark"
+            contype="0" conaffinity="0" mass="0" />
+          <geom type="sphere" pos="0.114 0.030 0.008" size="0.013" material="accent_cyan"
+            contype="0" conaffinity="0" mass="0" />
+          <geom type="sphere" pos="0.114 -0.030 0.008" size="0.013" material="accent_cyan"
+            contype="0" conaffinity="0" mass="0" />
+        </body>
+        <joint name="torso_lift_joint" axis="0 0 1" type="slide" range="0.0 0.3" damping="2.0" frictionloss="0.2" />
+        <body name="left_link1" pos="0.05 0.2 0.35">
+          <inertial pos="0 0 0" mass="3.0" diaginertia="0.01 0.01 0.01" />
+          <geom type="cylinder" pos="0 0 0.05" size="0.06 0.05" material="arm_blue" rgba="0.3 0.5 0.8 1" />
+          <joint name="left_joint1" axis="0 0 1" type="hinge" range="-2.8 2.8" damping="1.0" frictionloss="0.1" />
+          <body name="left_link2" pos="0 0 0.1">
+            <inertial pos="0 0 0.15" mass="2.5" diaginertia="0.05 0.05 0.005" />
+            <geom type="capsule" fromto="0 0 0.015 0 0 0.285" size="0.045" material="arm_blue" />
+            <joint name="left_joint2" axis="0 1 0" type="hinge" range="-1.5 1.5" damping="1.0" frictionloss="0.1" />
+            <body name="left_link3" pos="0 0 0.3">
+              <inertial pos="0 0 0" mass="1.5" diaginertia="0.005 0.005 0.005" />
+              <geom type="cylinder" pos="0 0 0.05" size="0.05 0.05" material="arm_blue" />
+              <joint name="left_joint3" axis="1 0 0" type="hinge" range="-2.8 2.8" damping="1.0" frictionloss="0.1" />
+              <body name="left_link4" pos="0 0 0.1">
+                <inertial pos="0 0 0.125" mass="2.0" diaginertia="0.03 0.03 0.003" />
+                <geom type="capsule" fromto="0 0 0.012 0 0 0.238" size="0.040" material="arm_blue" />
+                <joint name="left_joint4" axis="0 1 0" type="hinge" range="-2.5 0" damping="1.0" frictionloss="0.1" />
+                <body name="left_link5" pos="0 0 0.25">
+                  <inertial pos="0 0 0" mass="0.8" diaginertia="0.002 0.002 0.002" />
+                  <geom type="cylinder" pos="0 0 0.04" size="0.04 0.04" material="arm_blue" />
+                  <joint name="left_joint5" axis="0 0 1" type="hinge" range="-2.8 2.8" damping="0.5" frictionloss="0.05" />
+                  <body name="left_link6" pos="0 0 0.08">
+                    <inertial pos="0 0 0" mass="0.6" diaginertia="0.001 0.001 0.001" />
+                    <geom type="cylinder" pos="0 0 0.03" size="0.035 0.03" material="arm_blue" />
+                    <joint name="left_joint6" axis="0 1 0" type="hinge" range="-1.5 1.5" damping="0.5" frictionloss="0.05" />
+                    <body name="left_link7" pos="0 0 0.06">
+                      <inertial pos="0 0 0.05" mass="0.4" diaginertia="0.0005 0.0005 0.0003" />
+                      <geom type="ellipsoid" pos="0 0 0.05" size="0.042 0.032 0.055" material="gripper_grey" />
+                      <joint name="left_joint7" axis="1 0 0" type="hinge" range="-2.8 2.8" damping="0.5" frictionloss="0.05" />
+                      <!-- TCP is the actual fingertip/tool center.  The previous 0.12 m
+                           site sat near the wrist and forced the whole forearm into a bin. -->
+                      <site name="left_tcp" pos="0 0 0.26" type="sphere" size="0.01" rgba="1 0 0 0.5" />
+                      <body name="left_gripper_left_finger" pos="-0.02 0 0.1">
+                        <joint name="left_gripper_left_finger_joint" type="slide" axis="-1 0 0" range="0 0.02" damping="10" />
+                        <geom type="box" size="0.006 0.008 0.08" pos="0 0 0.08" rgba="0.3 0.3 0.3 1" friction="2.0 0.005 0.0001" />
+                      </body>
+                      <body name="left_gripper_right_finger" pos="0.02 0 0.1">
+                        <joint name="left_gripper_right_finger_joint" type="slide" axis="1 0 0" range="0 0.02" damping="10" />
+                        <geom type="box" size="0.006 0.008 0.08" pos="0 0 0.08" rgba="0.3 0.3 0.3 1" friction="2.0 0.005 0.0001" />
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="right_link1" pos="0.05 -0.2 0.35">
+          <inertial pos="0 0 0" mass="3.0" diaginertia="0.01 0.01 0.01" />
+          <geom type="cylinder" pos="0 0 0.05" size="0.06 0.05" material="arm_blue" />
+          <joint name="right_joint1" axis="0 0 1" type="hinge" range="-2.8 2.8" damping="1.0" frictionloss="0.1" />
+          <body name="right_link2" pos="0 0 0.1">
+            <inertial pos="0 0 0.15" mass="2.5" diaginertia="0.05 0.05 0.005" />
+            <geom type="capsule" fromto="0 0 0.015 0 0 0.285" size="0.045" material="arm_blue" />
+            <joint name="right_joint2" axis="0 1 0" type="hinge" range="-1.5 1.5" damping="1.0" frictionloss="0.1" />
+            <body name="right_link3" pos="0 0 0.3">
+              <inertial pos="0 0 0" mass="1.5" diaginertia="0.005 0.005 0.005" />
+              <geom type="cylinder" pos="0 0 0.05" size="0.05 0.05" material="arm_blue" />
+              <joint name="right_joint3" axis="1 0 0" type="hinge" range="-2.8 2.8" damping="1.0" frictionloss="0.1" />
+              <body name="right_link4" pos="0 0 0.1">
+                <inertial pos="0 0 0.125" mass="2.0" diaginertia="0.03 0.03 0.003" />
+                <geom type="capsule" fromto="0 0 0.012 0 0 0.238" size="0.040" material="arm_blue" />
+                <joint name="right_joint4" axis="0 1 0" type="hinge" range="-2.5 0" damping="1.0" frictionloss="0.1" />
+                <body name="right_link5" pos="0 0 0.25">
+                  <inertial pos="0 0 0" mass="0.8" diaginertia="0.002 0.002 0.002" />
+                  <geom type="cylinder" pos="0 0 0.04" size="0.04 0.04" material="arm_blue" />
+                  <joint name="right_joint5" axis="0 0 1" type="hinge" range="-2.8 2.8" damping="0.5" frictionloss="0.05" />
+                  <body name="right_link6" pos="0 0 0.08">
+                    <inertial pos="0 0 0" mass="0.6" diaginertia="0.001 0.001 0.001" />
+                    <geom type="cylinder" pos="0 0 0.03" size="0.035 0.03" material="arm_blue" />
+                    <joint name="right_joint6" axis="0 1 0" type="hinge" range="-1.5 1.5" damping="0.5" frictionloss="0.05" />
+                    <body name="right_link7" pos="0 0 0.06">
+                      <inertial pos="0 0 0.05" mass="0.4" diaginertia="0.0005 0.0005 0.0003" />
+                      <geom type="ellipsoid" pos="0 0 0.05" size="0.042 0.032 0.055" material="gripper_grey" />
+                      <joint name="right_joint7" axis="1 0 0" type="hinge" range="-2.8 2.8" damping="0.5" frictionloss="0.05" />
+                      <site name="right_tcp" pos="0 0 0.26" type="sphere" size="0.01" rgba="1 0 0 0.5" />
+                      <body name="right_gripper_left_finger" pos="-0.02 0 0.1">
+                        <joint name="right_gripper_left_finger_joint" type="slide" axis="-1 0 0" range="0 0.02" damping="10" />
+                        <geom type="box" size="0.006 0.008 0.08" pos="0 0 0.08" rgba="0.3 0.3 0.3 1" friction="2.0 0.005 0.0001" />
+                      </body>
+                      <body name="right_gripper_right_finger" pos="0.02 0 0.1">
+                        <joint name="right_gripper_right_finger_joint" type="slide" axis="1 0 0" range="0 0.02" damping="10" />
+                        <geom type="box" size="0.006 0.008 0.08" pos="0 0 0.08" rgba="0.3 0.3 0.3 1" friction="2.0 0.005 0.0001" />
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <!-- These coarse wrist housings overlap at valid folded wrist angles. -->
+    <exclude body1="left_link5" body2="left_link7" />
+    <exclude body1="right_link5" body2="right_link7" />
+  </contact>
+  <actuator>
+    <velocity name="vel_left_wheel_joint" joint="left_wheel_joint" kv="1.0" ctrlrange="-10 10" />
+    <velocity name="vel_right_wheel_joint" joint="right_wheel_joint" kv="1.0" ctrlrange="-10 10" />
+    <position name="pos_torso_lift_joint" joint="torso_lift_joint" kp="100" kv="10" ctrlrange="0.0 0.3" />
+    <position name="pos_left_joint1" joint="left_joint1" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_left_joint2" joint="left_joint2" kp="100" kv="10" ctrlrange="-1.5 1.5" />
+    <position name="pos_left_joint3" joint="left_joint3" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_left_joint4" joint="left_joint4" kp="100" kv="10" ctrlrange="-2.5 0" />
+    <position name="pos_left_joint5" joint="left_joint5" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_left_joint6" joint="left_joint6" kp="100" kv="10" ctrlrange="-1.5 1.5" />
+    <position name="pos_left_joint7" joint="left_joint7" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_right_joint1" joint="right_joint1" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_right_joint2" joint="right_joint2" kp="100" kv="10" ctrlrange="-1.5 1.5" />
+    <position name="pos_right_joint3" joint="right_joint3" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_right_joint4" joint="right_joint4" kp="100" kv="10" ctrlrange="-2.5 0" />
+    <position name="pos_right_joint5" joint="right_joint5" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="pos_right_joint6" joint="right_joint6" kp="100" kv="10" ctrlrange="-1.5 1.5" />
+    <position name="pos_right_joint7" joint="right_joint7" kp="100" kv="10" ctrlrange="-2.8 2.8" />
+    <position name="left_gripper" joint="left_gripper_left_finger_joint" kp="50" kv="5" ctrlrange="0 0.02" />
+    <position name="right_gripper" joint="right_gripper_left_finger_joint" kp="50" kv="5" ctrlrange="0 0.02" />
+  </actuator>
+  <equality>
+    <joint name="left_gripper_couple" joint1="left_gripper_left_finger_joint" joint2="left_gripper_right_finger_joint" polycoef="0 1 0 0 0" />
+    <joint name="right_gripper_couple" joint1="right_gripper_left_finger_joint" joint2="right_gripper_right_finger_joint" polycoef="0 1 0 0 0" />
+  </equality>
+</mujoco>

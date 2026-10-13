@@ -1,0 +1,19 @@
+<mujoco>
+  <asset>
+    <mesh name="chouzhi_mesh" file="../../assets/obj/chouzhi.obj" scale="0.2 0.2 0.2" />
+    <texture name="tex_chouzhi" type="2d" file="../../assets/obj/textures/chouzhi__texture_pbr_20250901.png" />
+    <material name="mat_chouzhi" texture="tex_chouzhi" specular="0.5" shininess="0.25" reflectance="0.0" rgba="1 1 1 1" />
+  </asset>
+
+  <worldbody>
+    <body name="chouzhi_0" pos="1.26 0.19 0.95">
+      <freejoint />
+      <geom name="chouzhi_0_visual" type="mesh" mesh="chouzhi_mesh" material="mat_chouzhi"
+        contype="0" conaffinity="0" density="0" />
+      <geom name="chouzhi_0_proxy" type="box"
+        size="0.06485 0.09603 0.04613"
+        pos="0.00065 0.09604 -0.00371"
+        density="400" friction="1.2 0.01 0.001" rgba="0 1 0 0.5" />
+    </body>
+  </worldbody>
+</mujoco>

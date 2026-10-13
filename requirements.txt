@@ -1,0 +1,12 @@
+mujoco>=3.2
+numpy
+scipy
+PyYAML
+gymnasium
+Pillow
+mink
+qpsolvers[quadprog]
+pandas
+pyarrow
+imageio[ffmpeg]
+pytest

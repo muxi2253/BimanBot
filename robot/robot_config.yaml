@@ -1,0 +1,234 @@
+# Dual-Arm Mobile Robot Configuration
+# This file defines robot-specific parameters for the IK system
+
+robot_type: dual_arm_robot
+
+assets:
+  # Paths are relative to this configuration file, making the asset bundle
+  # relocatable outside the source repository.
+  urdf: dual_arm_robot.urdf
+  model: dual_arm_robot.xml
+  scene: ../scene/combined_scene.xml
+
+# Kinematics configuration
+kinematics:
+  left_arm:
+    # Body chain from base to TCP (for reference, not used by mink directly)
+    chain:
+      - base_link
+      - torso_link
+      - left_link1
+      - left_link2
+      - left_link3
+      - left_link4
+      - left_link5
+      - left_link6
+      - left_link7
+
+    # Joint names in order
+    joints:
+      - left_joint1
+      - left_joint2
+      - left_joint3
+      - left_joint4
+      - left_joint5
+      - left_joint6
+      - left_joint7
+
+    # TCP site name (will be added by build script)
+    tcp_site: left_tcp
+
+    # Degrees of freedom
+    dof: 7
+
+  right_arm:
+    chain:
+      - base_link
+      - torso_link
+      - right_link1
+      - right_link2
+      - right_link3
+      - right_link4
+      - right_link5
+      - right_link6
+      - right_link7
+
+    joints:
+      - right_joint1
+      - right_joint2
+      - right_joint3
+      - right_joint4
+      - right_joint5
+      - right_joint6
+      - right_joint7
+
+    tcp_site: right_tcp
+
+    dof: 7
+
+# Mobile base configuration
+mobile_base:
+  type: differential  # differential drive (2 wheels)
+
+  # Kinematic demonstrations may reposition this free joint between work areas.
+  # The IK backend keeps it fixed unless allow_base_motion=True is requested.
+  root_joint: base_freejoint
+
+  joints:
+    - left_wheel_joint
+    - right_wheel_joint
+
+  # Wheel parameters
+  wheel_radius: 0.1  # meters
+  wheel_separation: 0.5  # meters
+
+# Torso configuration
+torso:
+  joint: torso_lift_joint
+  type: prismatic
+  range: [0.0, 0.3]  # meters
+
+# Gripper configuration (simplified parallel grippers)
+grippers:
+  left:
+    type: parallel
+    joints:
+      - left_gripper_left_finger_joint
+      - left_gripper_right_finger_joint
+    actuator: left_gripper
+    open: 0.02
+    closed: 0.0
+
+  right:
+    type: parallel
+    joints:
+      - right_gripper_left_finger_joint
+      - right_gripper_right_finger_joint
+    actuator: right_gripper
+    open: 0.02
+    closed: 0.0
+
+# Tool geometry used by both MJCF builders.  Keep the TCP at the physical
+# fingertip plane so IK targets and visible contact describe the same point.
+tool_geometry:
+  tcp_offset: [0.0, 0.0, 0.26]
+  finger_base_z: 0.10
+  finger_half_size: [0.006, 0.008, 0.08]
+
+# Rest pose (used as IK seed)
+rest_pose:
+  # Folded carry pose: both elbows stay close to the torso and the TCPs rest
+  # in front of the chest instead of extending behind the robot.
+  left_arm:
+    - 1.7576
+    - 0.9661
+    - 2.1251
+    - -0.4623
+    - -0.5912
+    - 1.4886
+    - 1.7316
+
+  # Mirrored folded carry pose.
+  right_arm:
+    - -1.7576
+    - 0.9661
+    - -2.1251
+    - -0.4623
+    - 0.5912
+    - 1.4886
+    - -1.7316
+
+  # Torso: lowered carry/work height. This keeps the 0.65 m shoulders close
+  # to the 0.55 m work surface while preserving lift travel for higher tasks.
+  torso: 0.0
+
+  # Grippers: open
+  left_gripper: 0.02
+  right_gripper: 0.02
+
+# Physical parameters
+physics:
+  # Total robot mass (kg)
+  total_mass: 75.0
+
+  # Base footprint (for collision avoidance)
+  base_footprint:
+    length: 0.6
+    width: 0.5
+    height: 0.3
+
+  # Reach envelope (approximate)
+  max_reach: 1.2  # meters from base center
+
+# Actuator parameters (for build_robot_mjcf.py)
+actuators:
+  # Position servos for arms and torso
+  position_servos:
+    kp: 100.0     # Proportional gain
+    kv: 10.0      # Derivative gain (damping)
+    ctrlrange: 1.0  # Control range multiplier
+
+  # Velocity servos for wheels
+  velocity_servos:
+    kp: 0.0
+    kv: 1.0
+    ctrlrange: 10.0  # rad/s
+
+# Collision avoidance parameters
+collision:
+  # Self-collision pairs to exclude
+  exclude_pairs:
+    - [left_link2, left_link3]
+    - [left_link3, left_link4]
+    - [left_link4, left_link5]
+    - [left_link5, left_link6]
+    - [left_link6, left_link7]
+    - [left_link5, left_link7]
+    - [right_link2, right_link3]
+    - [right_link3, right_link4]
+    - [right_link4, right_link5]
+    - [right_link5, right_link6]
+    - [right_link6, right_link7]
+    - [right_link5, right_link7]
+    - [torso_link, left_link1]
+    - [torso_link, right_link1]
+
+# Camera mounts (for visualization)
+cameras:
+  top:
+    parent: torso_link
+    pos: [0.2, 0, 0.45]
+    quat: [0.5, 0.5, -0.5, -0.5]
+    fovy: 65
+
+  left_wrist:
+    parent: left_link7
+    pos: [0, 0, 0.08]
+    quat: [0, 1, 0, 0]
+    fovy: 75
+
+  right_wrist:
+    parent: right_link7
+    pos: [0, 0, 0.08]
+    quat: [0, 1, 0, 0]
+    fovy: 75
+
+# Metadata
+metadata:
+  description: "Simplified dual-arm mobile manipulator for RL/IL research"
+  version: "1.0"
+  license: "MIT"
+  author: "opensource-candidate"
+
+  # Design notes
+  notes: |
+    This is a simplified educational robot model designed for:
+    - Pick-and-place tasks
+    - Reinforcement Learning / Imitation Learning research
+    - Dual-arm coordination experiments
+
+    The model uses basic geometric primitives (boxes, cylinders) rather than
+    complex meshes, making it fast to simulate and easy to understand.
+
+    Kinematic design inspired by common industrial dual-arm robots but
+    simplified for computational efficiency.

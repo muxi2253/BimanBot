@@ -1,0 +1,138 @@
+# 双臂移动机器人 MuJoCo 开源示例
+
+这是一个基于 MuJoCo、Gymnasium 和 Mink 的双臂移动操作示例。仓库内附可直接加载的公开 MJCF、参数化机器人适配层、模型驱动 IK、Gym 环境，以及 GIF 和 LeRobot 数据导出工具。
+
+## 当前可用功能
+
+| 功能 | 状态 | 入口 |
+|---|---:|---|
+| 公开双臂移动机器人 MJCF | 可用 | `robot/dual_arm_robot.xml` |
+| 配置驱动机器人适配层 | 可用 | `backend/robot_adapter.py` |
+| Mink 单臂位置/姿态 IK | 可用 | `backend/ik_backend.py` |
+| 双物体拾取、搬运、放置演示 | 可用 | `backend/public_demo.py` |
+| 双臂 Reach Gym 环境 | 可用 | `backend/gym_env_reach.py` |
+| Pick-place Gym 环境、三路 RGB 观察 | 可用 | `backend/gym_env.py` |
+| 摩擦与关节阻尼随机化 | 可用 | `DualArmPickPlaceEnv(domain_randomization=True)` |
+| qpos 轨迹转 LeRobot v2.1 | 可用 | `backend/serialize_to_lerobot.py` |
+| VR/手柄遥操作、训练脚本 | 尚未提供 | — |
+| 深度图与分割图录制 | 尚未提供 | — |
+
+公开 pick-place 演示使用 IK 与平滑插值，并以运动学方式携带物体。它适合验证运动学、相机和录制链路；它不是夹爪接触动力学基准。
+
+## 可以录制的效果
+
+1. **完整工作区视角**：机器人从左侧料箱取出两个物体，移动底盘后放入右侧料箱，输出 `recordings/demo_wide.gif`。
+2. **TCP 跟随特写**：相机跟随左臂末端，展示接近、闭合、抬升、转运、下降和释放，输出 `recordings/demo_closeup.gif`。
+3. **双臂 Reach 动作**：录制 Gym 环境中的周期性双臂动作，输出 `recordings/reach_episode.gif`。
+
+macOS 的 MuJoCo 离屏渲染需要使用 `mjpython`：
+
+```bash
+mjpython tools/record_demo.py
+mjpython tools/record_demo.py --items kebike_0 --seed 42 --fps 20
+mjpython tools/record_gym_episode.py --steps 100 --fps 25
+```
+
+SKU 默认从料箱上方随机生成并在重力下沉降。使用 `--seed` 可复现布局，使用 `--no-rand` 可退回 XML 中的固定位置。Linux 可直接把 `mjpython` 换成 `python`。
+
+## 安装与快速验证
+
+```bash
+conda create -n dual-arm python=3.10 -y
+conda activate dual-arm
+pip install -r requirements.txt
+
+python examples/basic_demo.py
+python backend/gym_env_reach.py
+python -m pytest
+```
+
+查看模型：
+
+```bash
+# macOS（交互式 viewer 需要 mjpython）
+mjpython tools/view_robot.py
+
+# Linux / Windows
+python tools/view_robot.py
+```
+
+该入口会读取 `robot_config.yaml`，将双臂初始化到镜像的胸前收臂姿态，
+并同步 position actuator；直接打开裸 MJCF 不会自动应用这份配置姿态。
+
+## IK 是否依赖具体机器人的 URDF？
+
+IK 求解必须有一个**具体的运动学模型**，否则没有关节轴、连杆变换、关节限位和 TCP 可供求解。但 `MinkIKSolver` 不依赖某个厂商 URDF，也没有写死当前机器人的关节名或自由度：
+
+```text
+URDF（可选的建模来源） ─┐
+                        ├─> MuJoCo MjModel + robot_config.yaml
+手写/转换后的 MJCF ─────┘                │
+                                         v
+                         RobotKinematics -> MinkIKSolver
+```
+
+Mink 在运行时直接使用已经加载的 `mujoco.MjModel`。URDF 只是生成 MJCF 的一种来源，并非 IK API 的必需参数。更换机器人时需要：
+
+- 一份能被 MuJoCo 加载的 MJCF；
+- 在 `robot_config.yaml` 中填写每条手臂的关节、TCP site、夹爪、可选底盘关节与静止姿态；
+- 场景中的相机挂载和物体资产。
+
+`MinkIKSolver` 会从模型枚举非目标手臂关节、自由底盘和物体 free joint，并在默认情况下将它们固定。只有显式传入 `allow_base_motion=True` 时，配置的底盘关节才参与求解。
+
+## 最小 IK 示例
+
+```python
+import mujoco
+from backend.ik_backend import MinkIKSolver, kinematics_from_adapter
+from backend.robot_adapter import load_default_adapter
+
+adapter = load_default_adapter()
+model = mujoco.MjModel.from_xml_path(adapter.get_asset_path("scene"))
+data = mujoco.MjData(model)
+mujoco.mj_forward(model, data)
+
+solver = MinkIKSolver(model, kinematics_from_adapter(adapter, "left"))
+qpos_target, error = solver.solve(data, [1.1, 0.3, 1.1])
+```
+
+## Gym 与 LeRobot
+
+```python
+from backend.gym_env import DualArmPickPlaceEnv
+
+env = DualArmPickPlaceEnv(
+    reward_type="shaped",
+    camera_obs=True,
+    domain_randomization=True,
+)
+obs, info = env.reset(seed=42)
+obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
+env.close()
+```
+
+LeRobot 转换器读取 `exports/episode_XXXXXX/trajectory_qpos.npy` 和 `annotation.json`，回放三路 RGB 相机并写出 Parquet、MP4 与 v2.1 元数据：
+
+```bash
+pip install pandas pyarrow "imageio[ffmpeg]"
+mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 10
+```
+
+当前仓库提供转换器，不包含遥操作采集器。输入轨迹的第二维必须与当前场景的 `model.nq` 一致。
+
+## 目录
+
+```text
+robot/                  公开 URDF、MJCF 与 robot_config.yaml
+scene/                  料箱、物体和组合场景
+backend/ik_backend.py   与机器人命名解耦的 Mink IK
+backend/public_demo.py  可录制的公开 pick-place 演示
+backend/gym_env*.py     Reach 与 pick-place Gym 环境
+backend/camera_config.py 配置驱动的三相机注入
+tools/record_*.py       GIF 录制脚本
+tests/                  公开链路回归测试
+```
+
+## License
+
+[MIT](LICENSE)
