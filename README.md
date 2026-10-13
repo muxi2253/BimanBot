@@ -22,6 +22,7 @@ English | [简体中文](README.md)
 - 🏋️ **Gymnasium Environments** - Standardized RL training environments (Reach & Pick-Place)
 - 📹 **Complete Data Pipeline** - GIF recording, RGB-D-Seg export, LeRobot v2.1 conversion
 - 🔀 **Domain Randomization** - Friction and joint damping randomization support
+- 🤖 **ML Training Ready** - PPO, BC, Diffusion Policy examples with pretrained model support
 
 ---
 
@@ -110,8 +111,10 @@ python tools/view_robot.py --scene
 | Pick-place Gym environment + three RGB views | [`backend/gym_env.py`](backend/gym_env.py) | ✅ |
 | Friction and joint damping randomization | `domain_randomization=True` | ✅ |
 | qpos trajectory to LeRobot v2.1 | [`backend/serialize_to_lerobot.py`](backend/serialize_to_lerobot.py) | ✅ |
+| PPO reinforcement learning training | [`examples/train_ppo.py`](examples/train_ppo.py) | ✅ |
+| Behavior cloning (BC) training | [`examples/train_bc.py`](examples/train_bc.py) | ✅ |
+| LeRobot pretrained model integration | [`examples/train_with_lerobot.py`](examples/train_with_lerobot.py) | ✅ |
 | VR/controller teleoperation | — | 🚧 |
-| Training scripts | — | 🚧 |
 | Depth and segmentation recording | — | 🚧 |
 
 > 💡 **Note**: The public pick-place demo uses IK and smooth interpolation, carrying objects kinematically. It validates kinematics, cameras, and recording pipeline; it is not a contact-rich grasping benchmark.
@@ -201,6 +204,36 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 ```
 
 > ⚠️ **Note**: Trajectory width must match the scene's `model.nq`. This repository provides the converter; teleoperation collector is not included.
+
+---
+
+## 🤖 Machine Learning Training
+
+Ready-to-use training scripts for reinforcement learning and imitation learning.
+
+### Quick Start
+
+```bash
+# Install training dependencies
+pip install -r requirements-training.txt
+
+# Train PPO from scratch
+python examples/train_ppo.py --train --timesteps 1000000
+
+# Or train with behavior cloning
+python examples/collect_expert_data.py --episodes 500
+python examples/train_bc.py --train --data data/expert_demos.npz
+
+# Use LeRobot pretrained models
+python examples/train_with_lerobot.py --list
+```
+
+**📖 Full training guide**: See [`examples/README.md`](examples/README.md) for detailed tutorials on:
+- PPO reinforcement learning
+- Behavior cloning (BC)
+- Diffusion Policy with LeRobot
+- Using pretrained models (ACT, Diffusion, etc.)
+- Data collection and augmentation strategies
 
 ---
 

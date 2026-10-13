@@ -110,8 +110,10 @@ python tools/view_robot.py --scene
 | Pick-place Gym 环境 + 三路 RGB | [`backend/gym_env.py`](backend/gym_env.py) | ✅ |
 | 摩擦与关节阻尼随机化 | `domain_randomization=True` | ✅ |
 | qpos 轨迹转 LeRobot v2.1 | [`backend/serialize_to_lerobot.py`](backend/serialize_to_lerobot.py) | ✅ |
+| PPO 强化学习训练 | [`examples/train_ppo.py`](examples/train_ppo.py) | ✅ |
+| 行为克隆 (BC) 训练 | [`examples/train_bc.py`](examples/train_bc.py) | ✅ |
+| LeRobot 预训练模型集成 | [`examples/train_with_lerobot.py`](examples/train_with_lerobot.py) | ✅ |
 | VR/手柄遥操作 | — | 🚧 |
-| 训练脚本 | — | 🚧 |
 | 深度图与分割图录制 | — | 🚧 |
 
 > 💡 **说明**: 公开 pick-place 演示使用 IK 与平滑插值，并以运动学方式携带物体。适合验证运动学、相机和录制链路；不是夹爪接触动力学基准。
@@ -201,6 +203,36 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 ```
 
 > ⚠️ **注意**: 输入轨迹的第二维必须与当前场景的 `model.nq` 一致。当前仓库提供转换器，不包含遥操作采集器。
+
+---
+
+## 🤖 机器学习训练
+
+提供即用型的强化学习和模仿学习训练脚本。
+
+### 快速开始
+
+```bash
+# 安装训练依赖
+pip install -r requirements-training.txt
+
+# 从零开始训练 PPO
+python examples/train_ppo.py --train --timesteps 1000000
+
+# 或使用行为克隆
+python examples/collect_expert_data.py --episodes 500
+python examples/train_bc.py --train --data data/expert_demos.npz
+
+# 使用 LeRobot 预训练模型
+python examples/train_with_lerobot.py --list
+```
+
+**📖 完整训练指南**: 查看 [`examples/README.md`](examples/README.md) 获取详细教程：
+- PPO 强化学习
+- 行为克隆 (BC)
+- 使用 LeRobot 的 Diffusion Policy
+- 使用预训练模型（ACT、Diffusion 等）
+- 数据收集与增强策略
 
 ---
 

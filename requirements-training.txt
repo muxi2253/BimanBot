@@ -1,0 +1,21 @@
+# Training Dependencies for BimanBot
+
+# Core RL framework
+stable-baselines3>=2.0.0
+gymnasium>=0.29.0
+
+# Deep learning
+torch>=2.0.0
+numpy>=1.24.0
+
+# Optional: LeRobot integration
+# Uncomment if you want to use pretrained models
+# lerobot
+# huggingface-hub
+# transformers
+
+# Logging and visualization
+tensorboard>=2.13.0
+
+# Data handling
+pandas>=2.0.0
