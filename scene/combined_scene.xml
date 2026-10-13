@@ -27,18 +27,18 @@
     </body>
 
     <!-- Destination table: robot chassis front edge is at x~0.335, this starts at x=0.95 -->
-    <!-- 0.55 m work surface: comfortably below the robot's 0.80 m shoulders. -->
-    <geom name="sort_table_top" type="box" size="0.25 0.70 0.025" pos="1.20 0 0.525" rgba="0.34 0.20 0.11 0.92" friction="1.0 0.005 0.0001" />
-    <geom name="sort_table_leg_fl" type="box" size="0.02 0.02 0.25" pos="0.98 0.55 0.25" rgba="0.18 0.11 0.07 0.9" />
-    <geom name="sort_table_leg_fr" type="box" size="0.02 0.02 0.25" pos="0.98 -0.55 0.25" rgba="0.18 0.11 0.07 0.9" />
-    <geom name="sort_table_leg_bl" type="box" size="0.02 0.02 0.25" pos="1.42 0.55 0.25" rgba="0.18 0.11 0.07 0.9" />
-    <geom name="sort_table_leg_br" type="box" size="0.02 0.02 0.25" pos="1.42 -0.55 0.25" rgba="0.18 0.11 0.07 0.9" />
+    <!-- Table height lowered by 10cm to improve wrist camera visibility into crates -->
+    <geom name="sort_table_top" type="box" size="0.25 0.70 0.025" pos="1.20 0 0.425" rgba="0.34 0.20 0.11 0.92" friction="1.0 0.005 0.0001" />
+    <geom name="sort_table_leg_fl" type="box" size="0.02 0.02 0.20" pos="0.98 0.55 0.20" rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_fr" type="box" size="0.02 0.02 0.20" pos="0.98 -0.55 0.20" rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_bl" type="box" size="0.02 0.02 0.20" pos="1.42 0.55 0.20" rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_br" type="box" size="0.02 0.02 0.20" pos="1.42 -0.55 0.20" rgba="0.18 0.11 0.07 0.9" />
 
 
     <!-- Destination crate: right-arm side (-Y), the only destination bin now (was crate_1+crate_2;
          crate_1's left-side slot is where the source bin sits now, see crate_0 below). Static
-         (no freejoint) so the robot always has a fixed sorting target. -->
-    <body name="crate_2" pos="1.20 -0.35 0.57" quat="1 1 0 0">
+         (no freejoint) so the robot always has a fixed sorting target. Lowered to match table height. -->
+    <body name="crate_2" pos="1.20 -0.35 0.47" quat="1 1 0 0">
       <geom name="crate_2_visual" type="mesh" mesh="crate_mesh" material="mat_crate_target"
         contype="0" conaffinity="0" density="0" />
       <!-- Four 20 mm feet put the visual basket clearly on the tabletop. -->
@@ -65,8 +65,8 @@
     <!-- Source bin: repurposed crate_0, holds the loose SKU items for the robot to pick from.
          Sits on the table's left side (+Y, where crate_1 used to be) so picking (left) and
          sorting into crate_2 (right) both happen on the tabletop. Static (no freejoint) so
-         freefall items cannot push the bin off its position. -->
-    <body name="crate_0" pos="1.20 0.35 0.57" quat="1 1 0 0">
+         freefall items cannot push the bin off its position. Lowered to match table height. -->
+    <body name="crate_0" pos="1.20 0.35 0.47" quat="1 1 0 0">
       <geom name="crate_0_visual" type="mesh" mesh="crate_mesh" material="mat_crate_source"
         contype="0" conaffinity="0" density="0" />
       <geom name="crate_0_foot_1" type="box" pos="-0.21 -0.01 -0.16" size="0.018 0.01 0.018"

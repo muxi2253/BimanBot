@@ -197,9 +197,9 @@ collision:
 cameras:
   top:
     parent: torso_link
-    pos: [0.2, 0, 0.45]
+    pos: [0.1, 0, 0.85]  # Higher and slightly back for better overhead view
     quat: [0.5, 0.5, -0.5, -0.5]
-    fovy: 65
+    fovy: 75  # Wider FOV to capture both arms and workspace
 
   left_wrist:
     parent: left_link7

@@ -10,18 +10,24 @@ build/
 
 # Data and outputs
 exports/
-recordings/
 data/
 datasets/
 *.parquet
 *.hdf5
-*.mp4
-*.gif
+*.npy
+*.npz
+
+# Recordings - ignore all except showcase_public demos
+recordings/*
+!recordings/showcase_public/
+recordings/showcase_public/*
+!recordings/showcase_public/*.gif
+!recordings/showcase_public/*.mp4
+
+# Other media files (except showcase demos)
 *.avi
 *.png
 *.jpg
-*.npy
-*.npz
 
 # Checkpoints and logs
 checkpoints/

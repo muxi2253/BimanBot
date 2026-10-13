@@ -116,18 +116,30 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--config", help="robot config YAML; defaults to ROBOT_CONFIG or public config")
+    parser.add_argument(
+        "--scene", action="store_true",
+        help="load the full scene (table, crates) instead of just the robot")
     args = parser.parse_args()
 
     adapter = RobotAdapter(args.config) if args.config else load_default_adapter()
-    model_path = adapter.get_asset_path("model")
-    if model_path is None:
-        raise ValueError("robot config does not define assets.model")
+
+    # Choose between scene (with table/crates) or just the robot model
+    if args.scene:
+        model_path = adapter.get_asset_path("scene")
+        if model_path is None:
+            raise ValueError("robot config does not define assets.scene")
+        asset_type = "scene"
+    else:
+        model_path = adapter.get_asset_path("model")
+        if model_path is None:
+            raise ValueError("robot config does not define assets.model")
+        asset_type = "robot model"
 
     model = mujoco.MjModel.from_xml_path(model_path)
     data = mujoco.MjData(model)
     initialize_home(model, data, adapter)
-    print("Loaded configured folded home pose. Press H to reset it; close the "
-          "viewer to exit.")
+    print(f"Loaded {asset_type} with configured folded home pose. Press H to reset "
+          "it; close the viewer to exit.")
     run_viewer(model, data, adapter)
     return 0
 

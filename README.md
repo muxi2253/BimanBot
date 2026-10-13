@@ -1,114 +1,162 @@
-# 双臂移动机器人 MuJoCo 开源示例
+<div align="center">
 
-这是一个基于 MuJoCo、Gymnasium 和 Mink 的双臂移动操作示例。仓库内附可直接加载的公开 MJCF、参数化机器人适配层、模型驱动 IK、Gym 环境，以及 GIF 和 LeRobot 数据导出工具。
+# 🤖 Dual-Arm Mobile Manipulator for MuJoCo
 
-## 效果展示
+**A dual-arm mobile manipulation platform based on MuJoCo, Gymnasium, and Mink**
 
-> **注意**: 演示 GIF 和数据集文件较大（约 300 MB），未包含在代码仓库中。
-> 
-> 📦 **获取方式**:
-> - [从 GitHub Releases 下载](../../releases)（推荐）
-> - [查看完整下载指南](docs/DATASET_DOWNLOAD.md)
-> - 或运行 `SHOWCASE_RELEASE.md` 中的命令自行生成
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![MuJoCo](https://img.shields.io/badge/MuJoCo-3.0+-green.svg)](https://mujoco.org/)
 
-### 完整工作区视角
-机器人从左侧料箱取出两个物体，移动底盘后放入右侧料箱。
+English | [简体中文](README.md)
 
-<!-- 下载后放置在: recordings/showcase_public/demo_wide.gif -->
-![Demo Wide View](https://via.placeholder.com/800x450.png?text=Demo+Wide+View+-+See+Releases)
+</div>
 
-### TCP 跟随特写
-相机跟随左臂末端，展示接近、闭合、抬升、转运、下降和释放的完整流程。
+---
 
-<!-- 下载后放置在: recordings/showcase_public/demo_closeup.gif -->
-![Demo Closeup View](https://via.placeholder.com/800x450.png?text=Demo+Closeup+-+See+Releases)
+## ✨ Features
 
-### 双臂 Reach 环境
-Gym 环境中的周期性双臂到达动作。
+- 🎯 **Ready-to-use MJCF Model** - Complete public dual-arm mobile robot model
+- 🔧 **Configuration-driven Architecture** - Parameterized robot adapter, easy to swap robots
+- 🎮 **Model-driven IK** - Mink-based position/orientation inverse kinematics solver
+- 🏋️ **Gymnasium Environments** - Standardized RL training environments (Reach & Pick-Place)
+- 📹 **Complete Data Pipeline** - GIF recording, RGB-D-Seg export, LeRobot v2.1 conversion
+- 🔀 **Domain Randomization** - Friction and joint damping randomization support
 
-<!-- 下载后放置在: recordings/showcase_public/reach_episode.gif -->
-![Reach Episode](https://via.placeholder.com/800x450.png?text=Reach+Episode+-+See+Releases)
+---
 
-### 空间融合实验
-四种非学习深度先验基线的对比。
+## 🎬 Demos
 
-<!-- 下载后放置在: recordings/showcase_public/spatial_fusion.mp4 -->
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <b>Full Workspace View</b><br/>
+      <sub>Robot picks objects from left crate, moves base, places into right crate</sub><br/><br/>
+      <img src="recordings/showcase_public/demo_wide.gif" width="100%"/>
+    </td>
+    <td width="50%" align="center">
+      <b>TCP-Following Closeup</b><br/>
+      <sub>Camera follows left arm end-effector, showing grasp and place</sub><br/><br/>
+      <img src="recordings/showcase_public/demo_closeup.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <b>Dual-Arm Reaching Environment</b><br/>
+      <sub>Periodic dual-arm reaching motions in Gym environment</sub><br/><br/>
+      <img src="recordings/showcase_public/reach_episode.gif" width="100%"/>
+    </td>
+    <td width="50%" align="center">
+      <b>Spatial Fusion Experiment</b><br/>
+      <sub>Comparison of four non-learning depth-prior baselines</sub><br/><br/>
+      <a href="recordings/showcase_public/spatial_fusion.mp4">📹 Watch Video</a>
+    </td>
+  </tr>
+</table>
 
-## 当前可用功能
+> **📦 Dataset Download**: Full dataset (~192 MB) available in [Dataset Download Guide](docs/DATASET_DOWNLOAD.md)
 
-| 功能 | 状态 | 入口 |
-|---|---:|---|
-| 公开双臂移动机器人 MJCF | 可用 | `robot/dual_arm_robot.xml` |
-| 配置驱动机器人适配层 | 可用 | `backend/robot_adapter.py` |
-| Mink 单臂位置/姿态 IK | 可用 | `backend/ik_backend.py` |
-| 双物体拾取、搬运、放置演示 | 可用 | `backend/public_demo.py` |
-| 双臂 Reach Gym 环境 | 可用 | `backend/gym_env_reach.py` |
-| Pick-place Gym 环境、三路 RGB 观察 | 可用 | `backend/gym_env.py` |
-| 摩擦与关节阻尼随机化 | 可用 | `DualArmPickPlaceEnv(domain_randomization=True)` |
-| qpos 轨迹转 LeRobot v2.1 | 可用 | `backend/serialize_to_lerobot.py` |
-| VR/手柄遥操作、训练脚本 | 尚未提供 | — |
-| 深度图与分割图录制 | 尚未提供 | — |
+---
 
-公开 pick-place 演示使用 IK 与平滑插值，并以运动学方式携带物体。它适合验证运动学、相机和录制链路；它不是夹爪接触动力学基准。
+## 🚀 Quick Start
 
-## 录制命令
-
-macOS 的 MuJoCo 离屏渲染需要使用 `mjpython`：
-
-```bash
-mjpython tools/record_demo.py
-mjpython tools/record_demo.py --items kebike_0 --seed 42 --fps 20
-mjpython tools/record_gym_episode.py --steps 100 --fps 25
-```
-
-SKU 默认从料箱上方随机生成并在重力下沉降。使用 `--seed` 可复现布局，使用 `--no-rand` 可退回 XML 中的固定位置。Linux 可直接把 `mjpython` 换成 `python`。
-
-## 安装与快速验证
+### Install Dependencies
 
 ```bash
 conda create -n dual-arm python=3.10 -y
 conda activate dual-arm
 pip install -r requirements.txt
+```
 
+### Run Examples
+
+```bash
+# Basic demo
 python examples/basic_demo.py
+
+# Dual-arm reaching environment
 python backend/gym_env_reach.py
+
+# Run tests
 python -m pytest
 ```
 
-查看模型：
+### View Model
 
 ```bash
-# macOS（交互式 viewer 需要 mjpython）
+# View robot only (default)
 mjpython tools/view_robot.py
 
+# View full scene (with table and crates)
+mjpython tools/view_robot.py --scene
+
 # Linux / Windows
-python tools/view_robot.py
+python tools/view_robot.py --scene
 ```
 
-该入口会读取 `robot_config.yaml`，将双臂初始化到镜像的胸前收臂姿态，
-并同步 position actuator；直接打开裸 MJCF 不会自动应用这份配置姿态。
+> 💡 This entry reads `robot_config.yaml`, initializes both arms to a mirrored chest rest pose, and syncs position actuators. Use `--scene` to load the full workspace with table and crates.
 
-## IK 是否依赖具体机器人的 URDF？
+---
 
-IK 求解必须有一个**具体的运动学模型**，否则没有关节轴、连杆变换、关节限位和 TCP 可供求解。但 `MinkIKSolver` 不依赖某个厂商 URDF，也没有写死当前机器人的关节名或自由度：
+## 📋 Feature List
+
+| Feature | Entry | Status |
+|---|---|:---:|
+| Public dual-arm mobile robot MJCF | [`robot/dual_arm_robot.xml`](robot/dual_arm_robot.xml) | ✅ |
+| Configuration-driven robot adapter | [`backend/robot_adapter.py`](backend/robot_adapter.py) | ✅ |
+| Mink single-arm position/orientation IK | [`backend/ik_backend.py`](backend/ik_backend.py) | ✅ |
+| Two-object pick, carry, place demo | [`backend/public_demo.py`](backend/public_demo.py) | ✅ |
+| Dual-arm reaching Gym environment | [`backend/gym_env_reach.py`](backend/gym_env_reach.py) | ✅ |
+| Pick-place Gym environment + three RGB views | [`backend/gym_env.py`](backend/gym_env.py) | ✅ |
+| Friction and joint damping randomization | `domain_randomization=True` | ✅ |
+| qpos trajectory to LeRobot v2.1 | [`backend/serialize_to_lerobot.py`](backend/serialize_to_lerobot.py) | ✅ |
+| VR/controller teleoperation | — | 🚧 |
+| Training scripts | — | 🚧 |
+| Depth and segmentation recording | — | 🚧 |
+
+> 💡 **Note**: The public pick-place demo uses IK and smooth interpolation, carrying objects kinematically. It validates kinematics, cameras, and recording pipeline; it is not a contact-rich grasping benchmark.
+
+---
+
+## 📹 Recording Commands
+
+macOS MuJoCo offscreen rendering requires `mjpython`:
+
+```bash
+# Generate demo GIFs
+mjpython tools/record_demo.py
+mjpython tools/record_demo.py --items kebike_0 --seed 42 --fps 20
+
+# Record Gym environment
+mjpython tools/record_gym_episode.py --steps 100 --fps 25
+```
+
+> 💡 **Tip**: SKUs spawn randomly above the source bin and settle under gravity by default. Use `--seed` for reproducible layout, `--no-rand` for authored XML poses. Linux can directly use `python` instead of `mjpython`.
+
+---
+
+## 🔧 IK Solver
+
+### Does IK require a robot-specific URDF?
+
+IK requires a **concrete kinematic model**, but `MinkIKSolver` does not depend on a vendor-specific URDF and does not hard-code joint names or DOF count:
 
 ```text
-URDF（可选的建模来源） ─┐
-                        ├─> MuJoCo MjModel + robot_config.yaml
-手写/转换后的 MJCF ─────┘                │
-                                         v
-                         RobotKinematics -> MinkIKSolver
+URDF (optional) ─┐
+                 ├─> MuJoCo MjModel + robot_config.yaml
+Authored MJCF ──┘            │
+                            ▼
+            RobotKinematics -> MinkIKSolver
 ```
 
-Mink 在运行时直接使用已经加载的 `mujoco.MjModel`。URDF 只是生成 MJCF 的一种来源，并非 IK API 的必需参数。更换机器人时需要：
+**To swap robots, provide**:
+- ✅ A loadable MJCF for MuJoCo
+- ✅ Configure joints, TCP sites, grippers, base in `robot_config.yaml`
+- ✅ Camera mounts and object assets in the scene
 
-- 一份能被 MuJoCo 加载的 MJCF；
-- 在 `robot_config.yaml` 中填写每条手臂的关节、TCP site、夹爪、可选底盘关节与静止姿态；
-- 场景中的相机挂载和物体资产。
+> 💡 `MinkIKSolver` automatically discovers and pins non-target joints. The configured base participates only when `allow_base_motion=True` is explicitly requested.
 
-`MinkIKSolver` 会从模型枚举非目标手臂关节、自由底盘和物体 free joint，并在默认情况下将它们固定。只有显式传入 `allow_base_motion=True` 时，配置的底盘关节才参与求解。
-
-## 最小 IK 示例
+### Minimal IK Example
 
 ```python
 import mujoco
@@ -124,7 +172,11 @@ solver = MinkIKSolver(model, kinematics_from_adapter(adapter, "left"))
 qpos_target, error = solver.solve(data, [1.1, 0.3, 1.1])
 ```
 
-## Gym 与 LeRobot
+---
+
+## 🏋️ Gym and LeRobot
+
+### Gym Environment Usage
 
 ```python
 from backend.gym_env import DualArmPickPlaceEnv
@@ -139,64 +191,148 @@ obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
 env.close()
 ```
 
-LeRobot 转换器读取 `exports/episode_XXXXXX/trajectory_qpos.npy` 和 `annotation.json`，回放三路 RGB 相机并写出 Parquet、MP4 与 v2.1 元数据：
+### LeRobot v2.1 Conversion
+
+The LeRobot converter reads trajectories and annotations, replays three RGB cameras, and writes Parquet, MP4, and v2.1 metadata:
 
 ```bash
 pip install pandas pyarrow "imageio[ffmpeg]"
 mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 10
 ```
 
-当前仓库提供转换器，不包含遥操作采集器。输入轨迹的第二维必须与当前场景的 `model.nq` 一致。
+> ⚠️ **Note**: Trajectory width must match the scene's `model.nq`. This repository provides the converter; teleoperation collector is not included.
 
-## 公开数据集
+---
 
-> **注意**: 数据集文件较大，未包含在代码仓库中。请从以下方式获取：
-> - **GitHub Releases**: [下载数据集压缩包](../../releases)（推荐）
-> - **自行生成**: 运行 `SHOWCASE_RELEASE.md` 中的命令生成数据
+## 📦 Public Dataset
 
-### LeRobot v2.1 格式数据集
-**路径**: `recordings/showcase_public/lerobot/`  
-**大小**: 约 4.6 MB
+> **Note**: Dataset files are large and not included in the code repository. Obtain them via:
+> - **GitHub Releases**: [Download dataset archive](../../releases) (recommended)
+> - **Self-generate**: Run commands in `SHOWCASE_RELEASE.md`
+> - **Full Guide**: [Dataset Download Guide](docs/DATASET_DOWNLOAD.md)
 
-包含内容：
-- **Parquet 数据表**: 488 帧的关节状态、夹爪位置、TCP 状态和动作
-- **三路相机视频**（10 fps，480×640）：
-  - `observation.image.top`: 俯视工作区视角
-  - `observation.image.left_wrist`: 左臂腕部相机
-  - `observation.image.right_wrist`: 右臂腕部相机
-- **元数据**: 包含特征维度、数据类型、分割信息等
+### LeRobot v2.1 Format Dataset
 
-特征说明：
-- `observation.state.joint`: 14 个关节位置（双臂各 7 个关节）
-- `observation.gripper_position`: 2 个夹爪开度
-- `observation.state.end`: 12 维 TCP 位姿（双臂各 6 维：xyz + 欧拉角）
-- `actions`: 16 维下一步动作（14 关节 + 2 夹爪）
+<details>
+<summary><b>📊 Dataset Details</b> (Click to expand)</summary>
 
-### 原始导出数据
-**路径**: `recordings/showcase_public/exports/episode_000000/`  
-**大小**: 约 187 MB
+**Path**: `recordings/showcase_public/lerobot/`  
+**Size**: ~4.6 MB
 
-包含 488 帧的完整传感器数据：
-- **RGB 图像** (`.npy`): 三路相机的原始 RGB 数组
-- **深度图** (`.npy`): 米制深度值
-- **分割掩码** (`.npy`): 整数标签图
-- **点云** (`.xyz`): 从俯视相机反投影的世界坐标点云
-- **可视化** (`.png`): RGB、深度和分割的 PNG 预览图
-- **轨迹**: `trajectory_qpos.npy` 和 `annotation.json`
+**Contents**:
+- 🗂️ **Parquet data table**: 488 frames of joint states, gripper positions, TCP states, and actions
+- 📹 **Three camera videos** (10 fps, 480×640):
+  - `observation.image.top`: Top-down workspace view
+  - `observation.image.left_wrist`: Left arm wrist camera
+  - `observation.image.right_wrist`: Right arm wrist camera
+- 📋 **Metadata**: Feature dimensions, data types, episode info
 
-数据采集说明：物体从料箱上方随机掉落，经重力沉降后稳定，然后开始录制。初始状态保存在 `initial_qpos.npy`。
+**Feature Description**:
+- `observation.state.joint`: 14 joint positions (7 per arm)
+- `observation.gripper_position`: 2 gripper openings
+- `observation.state.end`: 12-dim TCP pose (6 per arm: xyz + euler angles)
+- `actions`: 16-dim next action (14 joints + 2 grippers)
 
-## 目录
+</details>
+
+### Raw Export Data
+
+<details>
+<summary><b>🔬 Raw Data Details</b> (Click to expand)</summary>
+
+**Path**: `recordings/showcase_public/exports/episode_000000/`  
+**Size**: ~187 MB
+
+**Contains 488 frames of complete sensor data**:
+- 🖼️ **RGB images** (`.npy`): Raw RGB arrays from three cameras
+- 📏 **Depth maps** (`.npy`): Metric depth values
+- 🎨 **Segmentation masks** (`.npy`): Integer label maps
+- ☁️ **Point clouds** (`.xyz`): World-space points from top camera
+- 🖼️ **Visualizations** (`.png`): RGB, depth, and segmentation previews
+- 📈 **Trajectories**: `trajectory_qpos.npy` and `annotation.json`
+
+> 📝 **Data Collection**: Objects spawn randomly above the source bin, settle under gravity, then recording begins. Initial state saved in `initial_qpos.npy`.
+
+</details>
+
+---
+
+## 📂 Project Structure
 
 ```text
-robot/                  公开 URDF、MJCF 与 robot_config.yaml
-scene/                  料箱、物体和组合场景
-backend/ik_backend.py   与机器人命名解耦的 Mink IK
-backend/public_demo.py  可录制的公开 pick-place 演示
-backend/gym_env*.py     Reach 与 pick-place Gym 环境
-backend/camera_config.py 配置驱动的三相机注入
-tools/record_*.py       GIF 录制脚本
-tests/                  公开链路回归测试
+BimanBot/
+├── 🤖 robot/              Public URDF, MJCF, and robot_config.yaml
+├── 🎬 scene/              Crates, objects, and combined scenes
+├── ⚙️  backend/
+│   ├── ik_backend.py      Robot-agnostic Mink IK
+│   ├── public_demo.py     Recordable public pick-place demo
+│   ├── gym_env*.py        Reach and pick-place Gym environments
+│   └── camera_config.py   Configuration-driven three-camera injection
+├── 🛠️  tools/
+│   └── record_*.py        GIF recording scripts
+└── ✅ tests/              Public pipeline regression tests
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if it helps you!**
+
+[Submit Issue](../../issues) · [View Docs](docs/) · [Join Discussion](../../discussions)
+
+</div>
+> - **Generate yourself**: Run commands in `SHOWCASE_RELEASE.md` to generate data
+
+### LeRobot v2.1 Format Dataset
+**Path**: `recordings/showcase_public/lerobot/`  
+**Size**: ~4.6 MB
+
+Contains:
+- **Parquet data table**: 488 frames of joint states, gripper positions, TCP states, and actions
+- **Three camera videos** (10 fps, 480×640):
+  - `observation.image.top`: top-down workspace view
+  - `observation.image.left_wrist`: left wrist camera
+  - `observation.image.right_wrist`: right wrist camera
+- **Metadata**: feature dimensions, data types, split information, etc.
+
+Features:
+- `observation.state.joint`: 14 joint positions (7 per arm)
+- `observation.gripper_position`: 2 gripper openings
+- `observation.state.end`: 12-dim TCP pose (6 per arm: xyz + Euler angles)
+- `actions`: 16-dim next-step actions (14 joints + 2 grippers)
+
+### Raw Export Data
+**Path**: `recordings/showcase_public/exports/episode_000000/`  
+**Size**: ~187 MB
+
+Contains 488 frames of full sensor data:
+- **RGB images** (`.npy`): raw RGB arrays from three cameras
+- **Depth maps** (`.npy`): metric depth values in meters
+- **Segmentation masks** (`.npy`): integer label maps
+- **Point clouds** (`.xyz`): world-frame XYZ points back-projected from top camera
+- **Visualizations** (`.png`): PNG previews of RGB, depth, and segmentation
+- **Trajectory**: `trajectory_qpos.npy` and `annotation.json`
+
+Data collection note: Objects are randomly dropped into the source crate, settle under gravity, and then recording begins. The initial state is saved in `initial_qpos.npy`.
+
+## Layout
+
+```text
+robot/                   public URDF, MJCF, and robot_config.yaml
+scene/                   crates, objects, and combined scene
+backend/ik_backend.py    model-driven Mink IK
+backend/public_demo.py   recordable public pick-place demo
+backend/gym_env*.py      reaching and pick-place Gym environments
+backend/camera_config.py config-driven three-camera injection
+tools/record_*.py        GIF recording tools
+tests/                   public pipeline regression tests
 ```
 
 ## License
