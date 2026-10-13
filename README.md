@@ -2,6 +2,28 @@
 
 这是一个基于 MuJoCo、Gymnasium 和 Mink 的双臂移动操作示例。仓库内附可直接加载的公开 MJCF、参数化机器人适配层、模型驱动 IK、Gym 环境，以及 GIF 和 LeRobot 数据导出工具。
 
+## 效果展示
+
+### 完整工作区视角
+机器人从左侧料箱取出两个物体，移动底盘后放入右侧料箱。
+
+![Demo Wide View](recordings/showcase_public/demo_wide.gif)
+
+### TCP 跟随特写
+相机跟随左臂末端，展示接近、闭合、抬升、转运、下降和释放的完整流程。
+
+![Demo Closeup View](recordings/showcase_public/demo_closeup.gif)
+
+### 双臂 Reach 环境
+Gym 环境中的周期性双臂到达动作。
+
+![Reach Episode](recordings/showcase_public/reach_episode.gif)
+
+### 空间融合实验
+四种非学习深度先验基线的对比。
+
+[观看空间融合视频](recordings/showcase_public/spatial_fusion.mp4)
+
 ## 当前可用功能
 
 | 功能 | 状态 | 入口 |
@@ -19,11 +41,7 @@
 
 公开 pick-place 演示使用 IK 与平滑插值，并以运动学方式携带物体。它适合验证运动学、相机和录制链路；它不是夹爪接触动力学基准。
 
-## 可以录制的效果
-
-1. **完整工作区视角**：机器人从左侧料箱取出两个物体，移动底盘后放入右侧料箱，输出 `recordings/demo_wide.gif`。
-2. **TCP 跟随特写**：相机跟随左臂末端，展示接近、闭合、抬升、转运、下降和释放，输出 `recordings/demo_closeup.gif`。
-3. **双臂 Reach 动作**：录制 Gym 环境中的周期性双臂动作，输出 `recordings/reach_episode.gif`。
+## 录制命令
 
 macOS 的 MuJoCo 离屏渲染需要使用 `mjpython`：
 
@@ -119,6 +137,42 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 ```
 
 当前仓库提供转换器，不包含遥操作采集器。输入轨迹的第二维必须与当前场景的 `model.nq` 一致。
+
+## 公开数据集
+
+仓库提供了一个完整的示例数据集，包含：
+
+### LeRobot v2.1 格式数据集
+**路径**: `recordings/showcase_public/lerobot/`  
+**大小**: 约 4.6 MB
+
+包含内容：
+- **Parquet 数据表**: 488 帧的关节状态、夹爪位置、TCP 状态和动作
+- **三路相机视频**（10 fps，480×640）：
+  - `observation.image.top`: 俯视工作区视角
+  - `observation.image.left_wrist`: 左臂腕部相机
+  - `observation.image.right_wrist`: 右臂腕部相机
+- **元数据**: 包含特征维度、数据类型、分割信息等
+
+特征说明：
+- `observation.state.joint`: 14 个关节位置（双臂各 7 个关节）
+- `observation.gripper_position`: 2 个夹爪开度
+- `observation.state.end`: 12 维 TCP 位姿（双臂各 6 维：xyz + 欧拉角）
+- `actions`: 16 维下一步动作（14 关节 + 2 夹爪）
+
+### 原始导出数据
+**路径**: `recordings/showcase_public/exports/episode_000000/`  
+**大小**: 约 187 MB
+
+包含 488 帧的完整传感器数据：
+- **RGB 图像** (`.npy`): 三路相机的原始 RGB 数组
+- **深度图** (`.npy`): 米制深度值
+- **分割掩码** (`.npy`): 整数标签图
+- **点云** (`.xyz`): 从俯视相机反投影的世界坐标点云
+- **可视化** (`.png`): RGB、深度和分割的 PNG 预览图
+- **轨迹**: `trajectory_qpos.npy` 和 `annotation.json`
+
+数据采集说明：物体从料箱上方随机掉落，经重力沉降后稳定，然后开始录制。初始状态保存在 `initial_qpos.npy`。
 
 ## 目录
 

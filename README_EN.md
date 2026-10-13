@@ -2,6 +2,28 @@
 
 This repository contains a runnable public MuJoCo model, a configuration-driven robot adapter, model-driven Mink IK, Gymnasium environments, GIF recording, and LeRobot v2.1 conversion.
 
+## Demos
+
+### Full Workspace View
+The robot picks two objects from the left crate, moves the base, and places them into the right crate.
+
+![Demo Wide View](recordings/showcase_public/demo_wide.gif)
+
+### TCP-Following Closeup
+Camera follows the left arm's end-effector, showing approach, grasp, lift, transfer, place, and release.
+
+![Demo Closeup View](recordings/showcase_public/demo_closeup.gif)
+
+### Dual-Arm Reaching Environment
+Periodic dual-arm reaching motions in the Gym environment.
+
+![Reach Episode](recordings/showcase_public/reach_episode.gif)
+
+### Spatial Fusion Experiment
+Comparison of four non-learning depth-prior baselines.
+
+[Watch Spatial Fusion Video](recordings/showcase_public/spatial_fusion.mp4)
+
 ## Implemented capabilities
 
 | Capability | Entry point |
@@ -19,9 +41,7 @@ The public pick-and-place demonstration uses IK, smooth interpolation, and kinem
 
 ## Recordable outputs
 
-- `demo_wide.gif`: full workspace view of source-to-destination sorting.
-- `demo_closeup.gif`: TCP-following close-up of approach, grasp, lift, transfer, place, and release.
-- `reach_episode.gif`: periodic dual-arm motion in the reaching Gym environment.
+The repository includes example recordings demonstrating the system's capabilities. Use the following commands to generate your own:
 
 On macOS, run offscreen rendering through `mjpython`:
 
@@ -96,6 +116,42 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 ```
 
 The trajectory width must match the scene's `model.nq`. A teleoperation collector is not part of this public release.
+
+## Public Dataset
+
+The repository includes a complete example dataset with:
+
+### LeRobot v2.1 Format Dataset
+**Path**: `recordings/showcase_public/lerobot/`  
+**Size**: ~4.6 MB
+
+Contains:
+- **Parquet data table**: 488 frames of joint states, gripper positions, TCP states, and actions
+- **Three camera videos** (10 fps, 480×640):
+  - `observation.image.top`: top-down workspace view
+  - `observation.image.left_wrist`: left wrist camera
+  - `observation.image.right_wrist`: right wrist camera
+- **Metadata**: feature dimensions, data types, split information, etc.
+
+Features:
+- `observation.state.joint`: 14 joint positions (7 per arm)
+- `observation.gripper_position`: 2 gripper openings
+- `observation.state.end`: 12-dim TCP pose (6 per arm: xyz + Euler angles)
+- `actions`: 16-dim next-step actions (14 joints + 2 grippers)
+
+### Raw Export Data
+**Path**: `recordings/showcase_public/exports/episode_000000/`  
+**Size**: ~187 MB
+
+Contains 488 frames of full sensor data:
+- **RGB images** (`.npy`): raw RGB arrays from three cameras
+- **Depth maps** (`.npy`): metric depth values in meters
+- **Segmentation masks** (`.npy`): integer label maps
+- **Point clouds** (`.xyz`): world-frame XYZ points back-projected from top camera
+- **Visualizations** (`.png`): PNG previews of RGB, depth, and segmentation
+- **Trajectory**: `trajectory_qpos.npy` and `annotation.json`
+
+Data collection note: Objects are randomly dropped into the source crate, settle under gravity, and then recording begins. The initial state is saved in `initial_qpos.npy`.
 
 ## Layout
 
