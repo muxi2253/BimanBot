@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BimanBot 训练控制台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F6F1E8;
+            color: #1F2421;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            background: #2A2723;
+            color: #FBF7EF;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-family: 'DM Serif Display', Georgia, serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 .accent {
+            color: #C8853F;
+            font-style: italic;
+        }
+
+        header p {
+            color: #E2D9C8;
+            font-size: 1.1rem;
+        }
+
+        .status-chip {
+            display: inline-block;
+            background: #F0E3D0;
+            color: #A86B2C;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #E2D9C8;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: #8A8A80;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: #C8853F;
+            border-bottom-color: #F0E3D0;
+        }
+
+        .nav-tab.active {
+            color: #C8853F;
+            border-bottom-color: #C8853F;
+        }
+
+        /* Content Panels */
+        .content-panel {
+            display: none;
+        }
+
+        .content-panel.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(42, 39, 35, 0.08);
+            border: 1px solid #E2D9C8;
+        }
+
+        .card h2 {
+            font-family: 'Roboto Slab', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2A2723;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-family: 'Roboto Slab', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2A2723;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #2A2723;
+            color: #FBF7EF;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '$ ';
+            color: #C8853F;
+            font-weight: bold;
+        }
+
+        .code-comment {
+            color: #8A8A80;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            background: #C8853F;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #A86B2C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200, 133, 63, 0.3);
+        }
+
+        .btn-secondary {
+            background: #FBF7EF;
+            color: #C8853F;
+            border: 2px solid #C8853F;
+        }
+
+        .btn-secondary:hover {
+            background: #F0E3D0;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: #FBF7EF;
+            border-radius: 6px;
+            border-left: 4px solid #C8853F;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E2D9C8;
+        }
+
+        th {
+            background: #F0E3D0;
+            color: #2A2723;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #FBF7EF;
+        }
+
+        /* Progress bar */
+        .progress {
+            background: #E2D9C8;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #C8853F, #A86B2C);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #FBF7EF;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #E2D9C8;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #C8853F;
+        }
+
+        .stat-label {
+            color: #8A8A80;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #F0E3D0;
+            color: #A86B2C;
+        }
+
+        /* Alert boxes */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #F0E3D0;
+            border-color: #C8853F;
+            color: #2A2723;
+        }
+
+        .alert-success {
+            background: #D4EDDA;
+            border-color: #28A745;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #FFF3CD;
+            border-color: #FFC107;
+            color: #856404;
+        }
+
+        /* Copy button for code */
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #C8853F;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: nowrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 BimanBot <span class="accent">训练控制台</span></h1>
+            <p>强化学习与模仿学习训练平台</p>
+            <span class="status-chip">✨ Ready to Train</span>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showPanel('overview')">📊 总览</button>
+            <button class="nav-tab" onclick="showPanel('bc')">🎯 行为克隆 (BC)</button>
+            <button class="nav-tab" onclick="showPanel('ppo')">🚀 PPO 强化学习</button>
+            <button class="nav-tab" onclick="showPanel('lerobot')">🤗 LeRobot</button>
+            <button class="nav-tab" onclick="showPanel('monitoring')">📈 监控评估</button>
+            <button class="nav-tab" onclick="showPanel('faq')">❓ 常见问题</button>
+        </nav>
+
+        <!-- Overview Panel -->
+        <div id="overview" class="content-panel active">
+            <div class="card">
+                <h2>🎓 训练方案对比</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>方案</th>
+                            <th>数据需求</th>
+                            <th>训练时间</th>
+                            <th>泛化性</th>
+                            <th>推荐场景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>行为克隆 (BC)</strong></td>
+                            <td>500-1000 轨迹</td>
+                            <td>几小时</td>
+                            <td>⭐⭐</td>
+                            <td>快速原型验证</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PPO 强化学习</strong></td>
+                            <td>无需专家数据</td>
+                            <td>1-5 小时</td>
+                            <td>⭐⭐⭐</td>
+                            <td>主力推荐方案</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Diffusion Policy</strong></td>
+                            <td>1000-2000 轨迹</td>
+                            <td>1-2 天</td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td>高性能需求</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ACT</strong></td>
+                            <td>1000-3000 轨迹</td>
+                            <td>2-3 天</td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td>双臂协调任务</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>⚡ 快速开始</h2>
+                <p>5 分钟快速验证 PPO 训练效果：</p>
+                <div class="code-block">python examples/train_ppo.py \
+                    --train \
+                    --env pickplace \
+                    --timesteps 5000000 \
+                    --domain-random \
+                    --n-envs 8 \
+                    --log-dir logs/ppo_universal</div>
+                <button class="btn" onclick="copyCode(this)">📋 复制命令</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">训练方案</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">训练环境</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5-60</div>
+                    <div class="stat-label">训练时间（分钟）</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">90%+</div>
+                    <div class="stat-label">目标成功率</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 推荐训练流程</h2>
+                <div class="alert alert-info">
+                    <strong>💡 提示：</strong> 按照以下流程逐步完成训练，每个阶段完成后勾选复选框。
+                </div>
+
+                <h3>第一天：快速验证</h3>
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="day1-1">
+                        <label for="day1-1">BC 数据收集（Reach，10 分钟）</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day1-2">
+                        <label for="day1-2">BC 模型训练（Reach，15 分钟）</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day1-3">
+                        <label for="day1-3">PPO 快速训练（Reach，10 分钟）</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day1-4">
+                        <label for="day1-4">PPO 标准训练（Reach，1 小时）</label>
+                    </li>
+                </ul>
+
+                <h3>第二天：完整训练</h3>
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="day2-1">
+                        <label for="day2-1">PPO 完整训练（Pick-Place，3-5 小时，过夜运行）</label>
+                    </li>
+                </ul>
+
+                <h3>第三天：评估优化</h3>
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="day3-1">
+                        <label for="day3-1">评估 BC 模型</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day3-2">
+                        <label for="day3-2">评估 PPO 模型（Reach）</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day3-3">
+                        <label for="day3-3">评估 PPO 模型（Pick-Place）</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="day3-4">
+                        <label for="day3-4">记录训练指标并优化</label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BC Panel -->
+        <div id="bc" class="content-panel">
+            <div class="card">
+                <h2>🎯 行为克隆 (Behavior Cloning)</h2>
+                <p><strong>特点：</strong>最快上手，适合快速验证训练管道。通过模仿专家演示学习策略。</p>
+
+                <div class="alert alert-info">
+                    <strong>💡 优势：</strong> 训练快速、数据高效、实现简单<br>
+                    <strong>⚠️ 限制：</strong> 泛化性较差、只能做训练过的动作
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>步骤 1：收集专家数据</h3>
+                <p>使用规则策略生成专家演示数据。</p>
+
+                <h4>Reach 任务（5-10 分钟）</h4>
+                <div class="code-block">python examples/collect_expert_data.py --episodes 500 --env reach --output data/expert_reach.npz</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>Pick-Place 任务（15-20 分钟）</h4>
+                <div class="code-block">python examples/collect_expert_data.py --episodes 1000 --env pickplace --domain-random --output data/expert_pickplace.npz</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="bc-collect-1">
+                        <label for="bc-collect-1">Reach 数据收集完成</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="bc-collect-2">
+                        <label for="bc-collect-2">Pick-Place 数据收集完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>步骤 2：训练 BC 模型</h3>
+
+                <h4>Reach BC 训练（10-15 分钟）</h4>
+                <div class="code-block">python examples/train_bc.py --train --data data/expert_reach.npz --epochs 100 --batch-size 64 --lr 0.001 --log-dir logs/bc_reach</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>Pick-Place BC 训练（20-30 分钟）</h4>
+                <div class="code-block">python examples/train_bc.py --train --data data/expert_pickplace.npz --epochs 150 --batch-size 128 --lr 0.0005 --log-dir logs/bc_pickplace</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="bc-train-1">
+                        <label for="bc-train-1">Reach BC 训练完成</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="bc-train-2">
+                        <label for="bc-train-2">Pick-Place BC 训练完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>步骤 3：评估 BC 模型</h3>
+
+                <h4>评估 Reach BC</h4>
+                <div class="code-block">python examples/train_bc.py --eval --checkpoint logs/bc_reach/best_model.pth --env reach --episodes 50</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>评估 Pick-Place BC</h4>
+                <div class="code-block">python examples/train_bc.py --eval --checkpoint logs/bc_pickplace/best_model.pth --env pickplace --episodes 50</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <div class="alert alert-success">
+                    <strong>✅ 预期结果：</strong><br>
+                    Reach 成功率：80-90%<br>
+                    Pick-Place 成功率：60-75%
+                </div>
+            </div>
+        </div>
+
+        <!-- PPO Panel -->
+        <div id="ppo" class="content-panel">
+            <div class="card">
+                <h2>🚀 PPO 强化学习 (Proximal Policy Optimization)</h2>
+                <p><strong>特点：</strong>无需专家数据，自主探索学习，推荐用于主力训练。</p>
+
+                <div class="alert alert-info">
+                    <strong>💡 优势：</strong> 无需标注数据、泛化性强、成熟稳定<br>
+                    <strong>⚠️ 注意：</strong> 训练时间较长
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>步骤 1：快速验证（10 分钟）</h3>
+                <p>快速验证训练管道是否正常工作。</p>
+                <div class="code-block">python examples/train_ppo.py --train --env reach --timesteps 200000 --n-envs 8 --log-dir logs/ppo_reach_quick</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="ppo-quick">
+                        <label for="ppo-quick">快速验证完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>步骤 2：标准训练（30-60 分钟）</h3>
+                <p>Reach 任务标准训练，获得较好性能。</p>
+                <div class="code-block">python examples/train_ppo.py --train --env reach --timesteps 1000000 --n-envs 4 --save-freq 50000 --eval-freq 10000 --log-dir logs/ppo_reach</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <div class="alert alert-warning">
+                    <strong>📊 实时监控：</strong> 在新终端运行<br>
+                    <code style="background: #2A2723; color: #FBF7EF; padding: 0.2rem 0.5rem; border-radius: 4px;">tensorboard --logdir logs/ppo_reach</code><br>
+                    然后打开浏览器访问 <a href="http://localhost:6006" target="_blank">http://localhost:6006</a>
+                </div>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="ppo-standard">
+                        <label for="ppo-standard">标准训练完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>步骤 3：完整训练（3-5 小时，过夜运行）</h3>
+                <p>Pick-Place 任务完整训练，带域随机化，获得最佳泛化性能。</p>
+                <div class="code-block">nohup python examples/train_ppo.py --train --env pickplace --timesteps 5000000 --n-envs 8 --domain-random --save-freq 100000 --eval-freq 50000 --log-dir logs/ppo_pickplace > logs/training_pickplace.log 2>&1 &</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <p style="margin-top: 1rem;"><strong>查看训练进度：</strong></p>
+                <div class="code-block">tail -f logs/training_pickplace.log</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="ppo-full">
+                        <label for="ppo-full">完整训练完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>步骤 4：评估 PPO 模型</h3>
+
+                <h4>评估 Reach PPO</h4>
+                <div class="code-block">python examples/train_ppo.py --eval --checkpoint logs/ppo_reach/best_model.zip --env reach --episodes 100</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>评估 Pick-Place PPO</h4>
+                <div class="code-block">python examples/train_ppo.py --eval --checkpoint logs/ppo_pickplace/best_model.zip --env pickplace --episodes 100</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <div class="alert alert-success">
+                    <strong>✅ 预期结果：</strong><br>
+                    Reach 成功率：95%+<br>
+                    Pick-Place 成功率：85-95%
+                </div>
+
+                <ul class="checklist">
+                    <li>
+                        <input type="checkbox" id="ppo-eval-1">
+                        <label for="ppo-eval-1">Reach 评估完成</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="ppo-eval-2">
+                        <label for="ppo-eval-2">Pick-Place 评估完成</label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>训练时间估算</h3>
+
+                <h4>Reach 任务（100 万步）</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>硬件</th>
+                            <th>并行环境</th>
+                            <th>预计时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>M1/M2 Mac</td>
+                            <td>4</td>
+                            <td>30-50 分钟</td>
+                        </tr>
+                        <tr>
+                            <td>M1/M2 Mac</td>
+                            <td>8</td>
+                            <td>15-25 分钟</td>
+                        </tr>
+                        <tr>
+                            <td>Intel i7 CPU</td>
+                            <td>4</td>
+                            <td>50-90 分钟</td>
+                        </tr>
+                        <tr>
+                            <td>RTX 3080 GPU</td>
+                            <td>8</td>
+                            <td>15-20 分钟</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Pick-Place 任务（500 万步）</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>硬件</th>
+                            <th>并行环境</th>
+                            <th>预计时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>M1/M2 Mac</td>
+                            <td>4</td>
+                            <td>3-5 小时</td>
+                        </tr>
+                        <tr>
+                            <td>M1/M2 Mac</td>
+                            <td>8</td>
+                            <td>1.5-2.5 小时</td>
+                        </tr>
+                        <tr>
+                            <td>Intel i7 CPU</td>
+                            <td>4</td>
+                            <td>4-7 小时</td>
+                        </tr>
+                        <tr>
+                            <td>RTX 3080 GPU</td>
+                            <td>8</td>
+                            <td>1-2 小时</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- LeRobot Panel -->
+        <div id="lerobot" class="content-panel">
+            <div class="card">
+                <h2>🤗 LeRobot 预训练模型</h2>
+                <p><strong>特点：</strong>使用 HuggingFace 预训练模型，最前沿的机器人学习方法。</p>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ 注意：</strong> LeRobot 集成仍在开发中，建议先使用 PPO 或 BC 方案。
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>可用的预训练模型</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>模型</th>
+                            <th>方法</th>
+                            <th>特点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>lerobot/diffusion_pusht</code></td>
+                            <td>Diffusion Policy</td>
+                            <td>适合精细操作，生成平滑轨迹</td>
+                        </tr>
+                        <tr>
+                            <td><code>lerobot/act_aloha_mobile</code></td>
+                            <td>ACT</td>
+                            <td>专为双臂协调设计</td>
+                        </tr>
+                        <tr>
+                            <td><code>lerobot/tdmpc_pusht</code></td>
+                            <td>TD-MPC</td>
+                            <td>模型预测控制</td>
+                        </tr>
+                        <tr>
+                            <td><code>lerobot/vinn_aloha</code></td>
+                            <td>VINN</td>
+                            <td>最近邻模仿学习</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>步骤 1：列出可用模型</h3>
+                <div class="code-block">python examples/train_with_lerobot.py --list</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>步骤 2：微调预训练模型</h3>
+                <p>示例：微调 Diffusion Policy</p>
+                <div class="code-block">python examples/train_with_lerobot.py --model lerobot/diffusion_pusht --train --episodes 200</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <div class="alert alert-info">
+                    <strong>💡 提示：</strong> 完整实现需要额外开发工作，当前脚本为占位符。<br>
+                    建议先使用 PPO 或 BC 方案完成训练。
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>安装 LeRobot 依赖</h3>
+                <div class="code-block">pip install lerobot huggingface-hub transformers</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+        </div>
+
+        <!-- Monitoring Panel -->
+        <div id="monitoring" class="content-panel">
+            <div class="card">
+                <h2>📈 监控和评估</h2>
+                <p>实时监控训练进度，评估模型性能。</p>
+            </div>
+
+            <div class="card">
+                <h3>1. TensorBoard 实时监控</h3>
+                <p>可视化训练指标，追踪学习进度。</p>
+
+                <h4>启动 TensorBoard</h4>
+                <div class="code-block">tensorboard --logdir logs</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <p style="margin-top: 1rem;">然后在浏览器打开：<a href="http://localhost:6006" target="_blank" style="color: #C8853F; font-weight: 600;">http://localhost:6006</a></p>
+
+                <h4>关键指标</h4>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li>📊 <strong>rollout/ep_rew_mean</strong> - 平均奖励（越高越好）</li>
+                    <li>📏 <strong>rollout/ep_len_mean</strong> - 平均步数</li>
+                    <li>⚡ <strong>time/fps</strong> - 训练速度（每秒步数）</li>
+                    <li>📉 <strong>train/value_loss</strong> - 价值损失</li>
+                    <li>📉 <strong>train/policy_loss</strong> - 策略损失</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>2. 查看训练日志</h3>
+
+                <h4>实时查看日志</h4>
+                <div class="code-block">tail -f logs/training_pickplace.log</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>搜索关键信息</h4>
+                <div class="code-block">grep "ep_rew_mean" logs/training_pickplace.log</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>3. 评估模型性能</h3>
+
+                <h4>PPO 模型评估</h4>
+                <div class="code-block">python examples/train_ppo.py --eval --checkpoint logs/ppo_pickplace/best_model.zip --env pickplace --episodes 100</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+
+                <h4>BC 模型评估</h4>
+                <div class="code-block">python examples/train_bc.py --eval --checkpoint logs/bc_pickplace/best_model.pth --env pickplace --episodes 50</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>4. 训练记录表</h3>
+                <p>记录每次训练的关键指标，便于对比和优化。</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>方案</th>
+                            <th>环境</th>
+                            <th>总步数</th>
+                            <th>训练时间</th>
+                            <th>成功率</th>
+                            <th>平均奖励</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-10-13</td>
+                            <td>BC</td>
+                            <td>reach</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>2026-10-13</td>
+                            <td>PPO</td>
+                            <td>reach</td>
+                            <td>1M</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>2026-10-13</td>
+                            <td>PPO</td>
+                            <td>pickplace</td>
+                            <td>5M</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Panel -->
+        <div id="faq" class="content-panel">
+            <div class="card">
+                <h2>❓ 常见问题</h2>
+            </div>
+
+            <div class="card">
+                <h3>Q1: 训练过程中断了怎么办？</h3>
+                <p><strong>答：</strong>PPO 会自动保存检查点，使用 <code>--checkpoint</code> 参数恢复训练：</p>
+                <div class="code-block">python examples/train_ppo.py --train --checkpoint logs/ppo_reach/checkpoints/ppo_model_500000_steps.zip --timesteps 1000000</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>Q2: 训练速度太慢怎么办？</h3>
+                <p><strong>答：</strong>增加并行环境数或减少评估频率：</p>
+                <div class="code-block">python examples/train_ppo.py --train --n-envs 8 --eval-freq 50000</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>Q3: 奖励不收敛怎么办？</h3>
+                <p><strong>答：</strong>可能需要调整超参数（学习率、批次大小等）：</p>
+                <div class="code-block">python examples/train_ppo.py --train --lr 0.0001 --n-steps 4096 --batch-size 128</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>Q4: 内存不足怎么办？</h3>
+                <p><strong>答：</strong>减少并行环境数：</p>
+                <div class="code-block">python examples/train_ppo.py --train --n-envs 2</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>Q5: 如何选择训练方案？</h3>
+                <ul style="padding-left: 2rem;">
+                    <li><strong>快速验证：</strong>BC（1 小时内见效）</li>
+                    <li><strong>日常使用：</strong>PPO Reach（1 小时，性能好）</li>
+                    <li><strong>生产部署：</strong>PPO Pick-Place + Domain Randomization（过夜训练，最强泛化）</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Q6: 训练好的模型如何部署？</h3>
+                <p><strong>答：</strong>加载模型并在环境中运行：</p>
+                <div class="code-block" style="white-space: pre;">from stable_baselines3 import PPO
+model = PPO.load("logs/ppo_pickplace/best_model.zip")
+
+obs, _ = env.reset()
+for _ in range(1000):
+    action, _ = model.predict(obs, deterministic=True)
+    obs, reward, done, truncated, info = env.step(action)
+    if done or truncated:
+        break</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+            </div>
+
+            <div class="card">
+                <h3>Q7: 如何提高泛化性？</h3>
+                <p><strong>答：</strong>启用域随机化（Domain Randomization）：</p>
+                <div class="code-block">python examples/train_ppo.py --train --env pickplace --domain-random</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+                <p>这会随机化物体位置、尺寸、摩擦力等参数，提高模型对环境变化的适应性。</p>
+            </div>
+
+            <div class="card">
+                <h3>Q8: 如何使用 GPU 加速训练？</h3>
+                <p><strong>答：</strong>指定 <code>--device cuda</code> 参数（需要 NVIDIA GPU）：</p>
+                <div class="code-block">python examples/train_ppo.py --train --device cuda</div>
+                <button class="btn btn-secondary" onclick="copyCode(this)">📋 复制</button>
+                <p>如果使用 Mac M1/M2，可以指定 <code>--device mps</code></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showPanel(panelId) {
+            // Hide all panels
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected panel
+            document.getElementById(panelId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+
+            // Save to localStorage
+            localStorage.setItem('activePanel', panelId);
+        }
+
+        // Copy code to clipboard
+        function copyCode(button) {
+            const codeBlock = button.previousElementSibling;
+            const code = codeBlock.textContent.replace(/^\$ /, '').trim();
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ 已复制';
+                button.style.background = '#28A745';
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+
+        // Restore last active panel
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastPanel = localStorage.getItem('activePanel');
+            if (lastPanel && document.getElementById(lastPanel)) {
+                document.querySelectorAll('.content-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById(lastPanel).classList.add('active');
+                document.querySelector(`[onclick="showPanel('${lastPanel}')"]`).classList.add('active');
+            }
+
+            // Load checkbox states
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const savedState = localStorage.getItem(checkbox.id);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+
+                checkbox.addEventListener('change', () => {
+                    localStorage.setItem(checkbox.id, checkbox.checked);
+                });
+            });
+        });
+
+        // Add copy buttons to all code blocks
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.code-block').forEach(codeBlock => {
+                if (!codeBlock.nextElementSibling || !codeBlock.nextElementSibling.classList.contains('btn')) {
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'copy-btn';
+                    copyBtn.textContent = '复制';
+                    copyBtn.onclick = function() {
+                        const code = codeBlock.textContent.replace(/^\$ /, '').replace(/复制$/, '').trim();
+                        navigator.clipboard.writeText(code).then(() => {
+                            copyBtn.textContent = '✓';
+                            setTimeout(() => {
+                                copyBtn.textContent = '复制';
+                            }, 2000);
+                        });
+                    };
+                    codeBlock.style.position = 'relative';
+                    codeBlock.appendChild(copyBtn);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

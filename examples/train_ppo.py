@@ -42,10 +42,8 @@ def make_env(env_name: str, domain_random: bool = False, camera_obs: bool = Fals
     if env_name == "reach":
         from gym_env_reach import DualArmReachEnv
         def _init():
-            return DualArmReachEnv(
-                reward_type="shaped",
-                domain_randomization=domain_random,
-            )
+            # DualArmReachEnv doesn't support reward_type or domain_randomization yet
+            return DualArmReachEnv()
         return _init
     elif env_name == "pickplace":
         from gym_env import DualArmPickPlaceEnv
@@ -104,13 +102,22 @@ def train_ppo(args):
         "device": args.device,
     }
 
+    # Determine policy type based on observation space
+    from gymnasium import spaces
+    if isinstance(env.observation_space, spaces.Dict):
+        policy_type = "MultiInputPolicy"
+    else:
+        policy_type = "MlpPolicy"
+
+    print(f"   Using policy: {policy_type}")
+
     # Load checkpoint or create new model
     if args.checkpoint:
         print(f"\n📂 Loading checkpoint: {args.checkpoint}")
         model = PPO.load(args.checkpoint, env=env, **ppo_kwargs)
     else:
-        print("\n🤖 Creating new PPO model...")
-        model = PPO("MlpPolicy", env, **ppo_kwargs)
+        print(f"\n🤖 Creating new PPO model with {policy_type}...")
+        model = PPO(policy_type, env, **ppo_kwargs)
 
     # Callbacks
     checkpoint_callback = CheckpointCallback(

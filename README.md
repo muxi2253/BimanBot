@@ -112,6 +112,8 @@ python tools/view_robot.py --scene
 | Friction and joint damping randomization | `domain_randomization=True` | ✅ |
 | qpos trajectory to LeRobot v2.1 | [`backend/serialize_to_lerobot.py`](backend/serialize_to_lerobot.py) | ✅ |
 | PPO reinforcement learning training | [`examples/train_ppo.py`](examples/train_ppo.py) | ✅ |
+| SAC reinforcement learning training | [`examples/train_sac.py`](examples/train_sac.py) | ✅ |
+| TD3 reinforcement learning training | [`examples/train_td3.py`](examples/train_td3.py) | ✅ |
 | Behavior cloning (BC) training | [`examples/train_bc.py`](examples/train_bc.py) | ✅ |
 | LeRobot pretrained model integration | [`examples/train_with_lerobot.py`](examples/train_with_lerobot.py) | ✅ |
 | VR/controller teleoperation | — | 🚧 |
@@ -211,29 +213,52 @@ mjpython backend/serialize_to_lerobot.py --src exports --out data/lerobot --fps 
 
 Ready-to-use training scripts for reinforcement learning and imitation learning.
 
-### Quick Start
+### Reinforcement Learning (RL)
+
+Three RL algorithms available, from stable to sample-efficient:
+
+| Algorithm | Type | Sample Efficiency | Training Time | Use Case |
+|---|---|---|---|---|
+| **PPO** | On-policy | ⭐⭐ | 30-60 min | Most stable, beginner-friendly |
+| **SAC** | Off-policy | ⭐⭐⭐⭐ | 20-40 min | Sample-efficient, automatic exploration |
+| **TD3** | Off-policy | ⭐⭐⭐⭐ | 20-40 min | Continuous control, smooth actions |
+
+#### Quick Start
 
 ```bash
 # Install training dependencies
 pip install -r requirements-training.txt
 
-# Train PPO from scratch
-python examples/train_ppo.py --train --timesteps 1000000
+# PPO: Most stable (recommended for beginners)
+python examples/train_ppo.py --train --env reach --timesteps 1000000
 
-# Or train with behavior cloning
-python examples/collect_expert_data.py --episodes 500
-python examples/train_bc.py --train --data data/expert_demos.npz
+# SAC: Sample-efficient
+python examples/train_sac.py --train --env reach --timesteps 500000
+
+# TD3: Smooth continuous control
+python examples/train_td3.py --train --env reach --timesteps 500000
+
+# Evaluate trained model
+python examples/train_ppo.py --eval --checkpoint logs/ppo_reach/best_model.zip
+```
+
+### Imitation Learning
+
+```bash
+# Collect expert demonstrations
+python examples/collect_expert_data.py --episodes 500 --output data/expert.npz
+
+# Train with behavior cloning
+python examples/train_bc.py --train --data data/expert.npz --epochs 100
 
 # Use LeRobot pretrained models
 python examples/train_with_lerobot.py --list
 ```
 
-**📖 Full training guide**: See [`examples/README.md`](examples/README.md) for detailed tutorials on:
-- PPO reinforcement learning
-- Behavior cloning (BC)
-- Diffusion Policy with LeRobot
-- Using pretrained models (ACT, Diffusion, etc.)
-- Data collection and augmentation strategies
+**📖 Full guides**: 
+- **[Reinforcement Learning Guide](docs/reinforcement_learning_guide.md)** - Complete RL tutorial with algorithm comparisons
+- **[Training Dashboard](docs/training_dashboard.html)** - Interactive web interface for tracking progress
+- **[Training Guide](docs/training_guide.md)** - Step-by-step instructions for all methods
 
 ---
 
