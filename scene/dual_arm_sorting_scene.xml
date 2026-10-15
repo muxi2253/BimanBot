@@ -1,0 +1,115 @@
+<mujoco model="dual_arm_sorting_scene">
+  <compiler angle="radian" meshdir="." />
+  <include file="../robot/dual_arm_robot.xml"/>
+
+  <asset>
+    <mesh name="crate_mesh" file="../assets/obj/crate.obj" scale="1.0 1.0 1.0" />
+    <texture name="tex_crate" type="2d" file="../assets/obj/textures/plastic_crate_02_diff_4k.png" />
+    <material name="mat_crate_source" texture="tex_crate" specular="0.35" shininess="0.2"
+      reflectance="0.0" rgba="0.62 0.84 1.0 1.0" />
+    <material name="mat_crate_target" texture="tex_crate" specular="0.35" shininess="0.2"
+      reflectance="0.0" rgba="1.0 0.72 0.42 1.0" />
+  </asset>
+
+  <worldbody>
+    <!-- Grasp anchors for dual-arm demo -->
+    <body name="left_gripper_mocap" mocap="true" pos="-0.6 -0.2 0.6">
+      <geom type="sphere" size="0.05" rgba="1 0 1 0.6" contype="0" conaffinity="0"/>
+    </body>
+    <body name="right_gripper_mocap" mocap="true" pos="-0.6 0.2 0.6">
+      <geom type="sphere" size="0.05" rgba="0 1 1 0.6" contype="0" conaffinity="0"/>
+    </body>
+
+    <!-- Sorting table: in front of robot -->
+    <geom name="sort_table_top" type="box" size="0.35 0.60 0.025" pos="1.05 0 0.425"
+      rgba="0.34 0.20 0.11 0.92" friction="1.0 0.005 0.0001" />
+    <geom name="sort_table_leg_fl" type="box" size="0.02 0.02 0.20" pos="0.72 0.50 0.20"
+      rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_fr" type="box" size="0.02 0.02 0.20" pos="0.72 -0.50 0.20"
+      rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_bl" type="box" size="0.02 0.02 0.20" pos="1.38 0.50 0.20"
+      rgba="0.18 0.11 0.07 0.9" />
+    <geom name="sort_table_leg_br" type="box" size="0.02 0.02 0.20" pos="1.38 -0.50 0.20"
+      rgba="0.18 0.11 0.07 0.9" />
+
+    <!-- SOURCE BIN (inner, closer to robot): upright with opening toward robot
+         Position: (0.85, 0, 0.47) - 20cm closer than target bin
+         Rotation: X90 + Z90 = stand upright and rotate 90° horizontally -->
+    <body name="crate_source" pos="0.85 0 0.47" quat="0.5 0.5 0.5 0.5">
+      <geom name="crate_source_visual" type="mesh" mesh="crate_mesh" material="mat_crate_source"
+        contype="0" conaffinity="0" density="0" />
+      <!-- Feet -->
+      <geom name="crate_source_foot_1" type="box" pos="-0.21 -0.01 -0.16" size="0.018 0.01 0.018"
+        material="mat_crate_source" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_source_foot_2" type="box" pos="0.21 -0.01 -0.16" size="0.018 0.01 0.018"
+        material="mat_crate_source" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_source_foot_3" type="box" pos="-0.21 -0.01 0.16" size="0.018 0.01 0.018"
+        material="mat_crate_source" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_source_foot_4" type="box" pos="0.21 -0.01 0.16" size="0.018 0.01 0.018"
+        material="mat_crate_source" contype="0" conaffinity="0" mass="0" />
+      <!-- Collision proxy -->
+      <geom name="crate_source_bottom" type="box" size="0.2528 0.006 0.2028"
+        pos="0.0 0.006 0.0000" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_source_wall_1" type="box" size="0.0075 0.1270 0.2028"
+        pos="-0.245 0.12 0.0" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_source_wall_2" type="box" size="0.0075 0.1270 0.2028"
+        pos="0.245 0.12 0.0000" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_source_wall_3" type="box" size="0.2528 0.1270 0.0075"
+        pos="0.0 0.125 -0.19" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_source_wall_4" type="box" size="0.2528 0.1270 0.0075"
+        pos="0.0 0.12 0.19" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+    </body>
+
+    <!-- TARGET BIN (outer, farther from robot): upright with opening toward robot
+         Position: (1.25, 0, 0.47) - 40cm farther than source
+         Rotation: X90 + Z90 = stand upright and rotate 90° horizontally -->
+    <body name="crate_target" pos="1.25 0 0.47" quat="0.5 0.5 0.5 0.5">
+      <geom name="crate_target_visual" type="mesh" mesh="crate_mesh" material="mat_crate_target"
+        contype="0" conaffinity="0" density="0" />
+      <!-- Feet -->
+      <geom name="crate_target_foot_1" type="box" pos="-0.21 -0.01 -0.16" size="0.018 0.01 0.018"
+        material="mat_crate_target" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_target_foot_2" type="box" pos="0.21 -0.01 -0.16" size="0.018 0.01 0.018"
+        material="mat_crate_target" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_target_foot_3" type="box" pos="-0.21 -0.01 0.16" size="0.018 0.01 0.018"
+        material="mat_crate_target" contype="0" conaffinity="0" mass="0" />
+      <geom name="crate_target_foot_4" type="box" pos="0.21 -0.01 0.16" size="0.018 0.01 0.018"
+        material="mat_crate_target" contype="0" conaffinity="0" mass="0" />
+      <!-- Collision proxy -->
+      <geom name="crate_target_bottom" type="box" size="0.2528 0.006 0.2028"
+        pos="0.0 0.006 0.0000" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_target_wall_1" type="box" size="0.0075 0.1270 0.2028"
+        pos="-0.245 0.12 0.0" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_target_wall_2" type="box" size="0.0075 0.1270 0.2028"
+        pos="0.245 0.12 0.0000" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_target_wall_3" type="box" size="0.2528 0.1270 0.0075"
+        pos="0.0 0.125 -0.19" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+      <geom name="crate_target_wall_4" type="box" size="0.2528 0.1270 0.0075"
+        pos="0.0 0.12 0.19" density="400" friction="1.2 0.01 0.001" rgba="1 0 0 0" />
+    </body>
+
+    <!-- Graspable objects in source bin -->
+    <!-- Left object: small box in left side of source bin -->
+    <body name="left_object" pos="0.85 0.08 0.54">
+      <freejoint name="left_object_joint"/>
+      <geom name="left_object_geom" type="box" size="0.03 0.03 0.03"
+        rgba="0.9 0.3 0.3 1.0" mass="0.1" friction="1.0 0.005 0.0001" />
+    </body>
+
+    <!-- Right object: small box in right side of source bin -->
+    <body name="right_object" pos="0.85 -0.08 0.54">
+      <freejoint name="right_object_joint"/>
+      <geom name="right_object_geom" type="box" size="0.03 0.03 0.03"
+        rgba="0.3 0.9 0.3 1.0" mass="0.1" friction="1.0 0.005 0.0001" />
+    </body>
+
+  </worldbody>
+
+  <equality>
+    <!-- Weld TCP to mocap for kinesthetic teaching -->
+    <weld name="left_gripper_weld" body1="left_gripper_mocap" body2="left_link7"
+          active="false" solref="0.02 1"/>
+    <weld name="right_gripper_weld" body1="right_gripper_mocap" body2="right_link7"
+          active="false" solref="0.02 1"/>
+  </equality>
+</mujoco>
